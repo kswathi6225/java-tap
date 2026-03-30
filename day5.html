@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 5</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 20px 80px;
+        }
+        .sidebar {
+          width: 180px;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      pre {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--accent2);
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Flow */
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+      }
+      .flow div {
+        background: var(--surface2);
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html" class="active"
+          >📦 Day 5 – Java Basics & Data Types</a
+        >
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 5</div>
+        <h1>Data Types &amp; <span>Variables in Java</span></h1>
+        <p class="subtitle">
+          Understanding data types, variables, and how information is stored in
+          Java memory.
+        </p>
+        <div class="tags">
+          <span class="tag">Data Types</span>
+          <span class="tag">Variables</span>
+          <span class="tag">Primitive Types</span>
+          <span class="tag">Memory</span>
+          <span class="tag">int</span>
+          <span class="tag">float</span>
+          <span class="tag">double</span>
+          <span class="tag">char</span>
+          <span class="tag">boolean</span>
+        </div>
+      </div>
+
+      <!-- 1. Quick Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-orange">🔁</div>
+          Quick Revision (Day 4)
+        </div>
+
+        <div class="card">
+          <p><strong>Java = Object-Oriented Programming Language</strong></p>
+          <ul class="notes">
+            <li>World is a collection of objects</li>
+            <li>Every object belongs to a class</li>
+            <li>
+              Every object has: State (HAS) → Data & Behavior (DOES) → Methods
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Key Concepts:</strong></p>
+          <ul class="notes">
+            <li><strong>Class</strong> = Blueprint (imaginary)</li>
+            <li><strong>Object</strong> = Real entity</li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          From Day 4: Objects have State (properties) and Behavior (methods).
+          Today we dive deeper into how State is stored using Data Types.
+        </div>
+      </section>
+
+      <!-- 2. Today's Focus -->
+      <section class="section" id="focus">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Today's Focus
+        </div>
+
+        <div class="highlight">
+          Now we move into actual Java coding foundation
+        </div>
+
+        <div class="card">
+          <p><strong>Topics for Today:</strong></p>
+          <ul class="notes">
+            <li>Data Types</li>
+            <li>Variables</li>
+            <li>How data is stored in Java</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. What is Data? -->
+      <section class="section" id="data">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          What is Data?
+        </div>
+
+        <div class="definition">
+          <div class="term">Data</div>
+          <div class="meaning">
+            Any information that represents facts or values
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Examples of Data:</strong></p>
+          <ul class="notes">
+            <li><strong>Name</strong> → "Swathi"</li>
+            <li><strong>Age</strong> → 21</li>
+            <li><strong>Marks</strong> → 95.5</li>
+            <li><strong>Gender</strong> → 'F'</li>
+          </ul>
+        </div>
+
+        <div class="highlight green">
+          In programming: Everything we store = Data
+        </div>
+      </section>
+
+      <!-- 4. What is a Data Type? -->
+      <section class="section" id="datatype">
+        <div class="section-title">
+          <div class="icon icon-yellow">📦</div>
+          What is a Data Type?
+        </div>
+
+        <div class="definition">
+          <div class="term">Data Type</div>
+          <div class="meaning">
+            Type of data a variable can store. It tells the computer what kind
+            of value you are storing.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Why Data Types?</strong></p>
+          <p>Computer memory is limited, so it needs to know:</p>
+          <ul class="notes">
+            <li>How much space to allocate</li>
+            <li>What type of value is stored</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5. Types of Data in Java -->
+      <section class="section" id="types">
+        <div class="section-title">
+          <div class="icon icon-blue">🔢</div>
+          Types of Data in Java
+        </div>
+
+        <div class="highlight">Java mainly has 2 categories of Data Types</div>
+
+        <div class="card">
+          <p><strong>🔹 Primitive Data Types</strong></p>
+          <p>Built-in, basic data types</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Data Type</th>
+              <th>Example</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td><code>int</code></td>
+              <td>10</td>
+              <td>Integer numbers</td>
+            </tr>
+            <tr>
+              <td><code>float</code></td>
+              <td>10.5f</td>
+              <td>Decimal numbers</td>
+            </tr>
+            <tr>
+              <td><code>double</code></td>
+              <td>10.555</td>
+              <td>More precise decimal</td>
+            </tr>
+            <tr>
+              <td><code>char</code></td>
+              <td>'A'</td>
+              <td>Single character</td>
+            </tr>
+            <tr>
+              <td><code>boolean</code></td>
+              <td>true/false</td>
+              <td>Logical values</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Non-Primitive Data Types</strong></p>
+          <p>Created by programmer. Examples:</p>
+          <ul class="notes">
+            <li>String</li>
+            <li>Arrays</li>
+            <li>Classes</li>
+            <li>Objects</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. Important Primitive Data Types -->
+      <section class="section" id="primitives">
+        <div class="section-title">
+          <div class="icon icon-orange">🔤</div>
+          Important Primitive Data Types
+        </div>
+
+        <div class="card">
+          <p><strong>🔸 int (Integer)</strong></p>
+          <p>Stores whole numbers</p>
+          <pre>int age = 21;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>🔸 float</strong></p>
+          <p>Stores decimal numbers (less precision)</p>
+          <pre>float price = 99.5f;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>🔸 double</strong></p>
+          <p>Stores decimal numbers (high precision)</p>
+          <pre>double salary = 50000.75;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>🔸 char (Character)</strong></p>
+          <p>Stores single character</p>
+          <pre>char grade = 'A';</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>🔸 boolean</strong></p>
+          <p>Stores true/false (logical values)</p>
+          <pre>boolean isPassed = true;</pre>
+        </div>
+      </section>
+
+      <!-- 7. What is a Variable? -->
+      <section class="section" id="variable">
+        <div class="section-title">
+          <div class="icon icon-blue">🧾</div>
+          What is a Variable?
+        </div>
+
+        <div class="definition">
+          <div class="term">Variable</div>
+          <div class="meaning">
+            A named memory location used to store data. Think of it as a
+            container to hold information.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Real-Life Analogy:</strong></p>
+          <div class="flow">
+            <div>📦 Box = Variable</div>
+            <div>→</div>
+            <div>📝 Item inside = Data</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Syntax of Variable -->
+      <section class="section" id="syntax">
+        <div class="section-title">
+          <div class="icon icon-green">✍️</div>
+          Syntax of Variable
+        </div>
+
+        <div class="card">
+          <p><strong>Basic Syntax:</strong></p>
+          <pre>dataType variableName = value;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>Examples:</strong></p>
+          <pre>
+int age = 21;
+String name = "Swathi";
+float marks = 95.5f;
+boolean isActive = true;
+char gender = 'F';</pre
+          >
+        </div>
+      </section>
+
+      <!-- 9. Rules for Naming Variables -->
+      <section class="section" id="naming">
+        <div class="section-title">
+          <div class="icon icon-yellow">⚠️</div>
+          Rules for Naming Variables
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Rules to Follow:</strong></p>
+          <ul class="notes">
+            <li>Must start with letter, underscore (_), or dollar ($)</li>
+            <li>Cannot start with number ❌</li>
+            <li>No spaces ❌</li>
+            <li>Case-sensitive (age ≠ Age)</li>
+          </ul>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>✅ Valid Names:</strong></p>
+            <pre>
+int age;
+int _count;
+int $price;
+int myAge;</pre
+            >
+          </div>
+          <div class="card">
+            <p><strong>❌ Invalid Names:</strong></p>
+            <pre>
+int 1age;
+int my age;
+int my-value;
+int class;</pre
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Memory Understanding -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-blue">🧠</div>
+          Memory Understanding (VERY IMPORTANT)
+        </div>
+
+        <div class="highlight">When you write: <code>int age = 21;</code></div>
+
+        <div class="card">
+          <p><strong>What Happens Behind the Scenes:</strong></p>
+          <ul class="notes">
+            <li>Memory is allocated for variable "age"</li>
+            <li>Value 21 is stored in that memory</li>
+            <li>Variable "age" is a reference to that memory location</li>
+          </ul>
+        </div>
+
+        <div class="flow">
+          <div>1. Declare</div>
+          <div>→</div>
+          <div>2. Allocate Memory</div>
+          <div>→</div>
+          <div>3. Store Value</div>
+          <div>→</div>
+          <div>4. Reference</div>
+        </div>
+      </section>
+
+      <!-- 11. Connection with OOP -->
+      <section class="section" id="oop-connection">
+        <div class="section-title">
+          <div class="icon icon-orange">🔗</div>
+          Connection with OOP
+        </div>
+
+        <div class="highlight orange">
+          From Day 4: Objects have properties (State). Properties are stored
+          using Data Types and Variables.
+        </div>
+
+        <div class="card">
+          <p><strong>Example from Day 4:</strong></p>
+          <pre>
+class Car {
+    String name;
+    int cost;
+    float mileage;
+}</pre
+          >
+          <p style="margin-top: 12px"><strong>Here:</strong></p>
+          <ul class="notes">
+            <li><strong>name, cost, mileage</strong> = State (HAS part)</li>
+            <li><strong>Data types</strong> define what they store</li>
+            <li><strong>Variables</strong> hold the actual values</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 12. Key Takeaways -->
+      <section class="section" id="takeaways">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Key Takeaways
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>Data</strong> = Information</li>
+            <li><strong>Data Type</strong> = Type/category of data</li>
+            <li><strong>Variable</strong> = Storage container for data</li>
+            <li><strong>Primitive types</strong> = Basic built-in types</li>
+            <li>
+              <strong>Non-primitive types</strong> = Complex/advanced types
+            </li>
+            <li>
+              <strong>Variables + Data Types</strong> = Foundation of Java
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 13. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-yellow">📢</div>
+          Interview Questions
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>What is data type in Java?</li>
+            <li>Difference between primitive and non-primitive data types</li>
+            <li>What is a variable?</li>
+            <li>Why do we use data types?</li>
+            <li>Difference between int, float, double</li>
+            <li>Rules for variable naming</li>
+            <li>Why is memory allocation important?</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 14. Final Understanding -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-blue">🧠</div>
+          Final Simple Understanding
+        </div>
+
+        <div class="highlight">
+          Think like this:
+          <div style="margin-top: 10px">
+            <strong>Data</strong> → Value<br />
+            <strong>Data Type</strong> → Type of value<br />
+            <strong>Variable</strong> → Where value is stored
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Simple Formula:</strong></p>
+          <div
+            style="
+              font-size: 13px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              color: var(--accent2);
+              margin-top: 12px;
+            "
+          >
+            Variables of different Data Types store different kinds of Data in
+            Memory
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

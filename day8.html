@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 8</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .flow div {
+        background: var(--surface2);
+        border: 1px solid var(--accent2);
+        padding: 12px 16px;
+        border-radius: 8px;
+        color: var(--accent2);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html" class="active">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 8</div>
+        <h1>Data Types <span>🔢</span></h1>
+        <p class="subtitle">MOST IMPORTANT foundation concept in Java</p>
+        <div class="tags">
+          <div class="tag">Memory</div>
+          <div class="tag">Binary</div>
+          <div class="tag">RAM</div>
+          <div class="tag">Primitive Types</div>
+        </div>
+      </div>
+
+      <!-- 1. Recap from Previous Classes -->
+      <section class="section" id="recap">
+        <div class="section-title">
+          <div class="icon icon-blue">↩️</div>
+          Recap from Previous Classes
+        </div>
+
+        <div class="highlight green">
+          We've covered the foundation. Now let's understand how data is stored!
+        </div>
+
+        <div class="card">
+          <p><strong>✅ What we know so far:</strong></p>
+          <ul class="notes">
+            <li>
+              <strong>Java basics</strong> – structure, syntax, main() method
+            </li>
+            <li><strong>print / println</strong> – output to console</li>
+            <li>
+              <strong>Loops & Pattern Programming</strong> – nested loops, logic
+            </li>
+            <li>
+              <strong>Now we need</strong> – How is data stored & managed?
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. What is Data Type? (REAL DEFINITION) -->
+      <section class="section" id="definition">
+        <div class="section-title">
+          <div class="icon icon-orange">❗</div>
+          What is Data Type? (REAL DEFINITION)
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Wrong:</strong> "Types of data"
+        </div>
+
+        <div class="highlight green">
+          <strong>✅ Correct:</strong> Data types are
+          <strong>converters</strong> that convert real-world data into 0s and
+          1s
+        </div>
+
+        <div class="definition">
+          <div class="term">💡 Key Insight</div>
+          <div class="meaning">
+            Data types are not just categories. They are bridge components that
+            translate human-readable data into binary format that computers can
+            understand and store in RAM.
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Why Data Types? -->
+      <section class="section" id="why">
+        <div class="section-title">
+          <div class="icon icon-blue">❓</div>
+          Why Data Types?
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Computer (RAM) understands ONLY:</strong></p>
+          <ul class="notes">
+            <li><strong>0</strong> – Low voltage</li>
+            <li><strong>1</strong> – High voltage</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 But real-world data is:</strong></p>
+          <table class="table-wrap">
+            <table>
+              <tr>
+                <th>Data Type</th>
+                <th>Example</th>
+              </tr>
+              <tr>
+                <td>Numbers</td>
+                <td>23</td>
+              </tr>
+              <tr>
+                <td>Decimals</td>
+                <td>5.11</td>
+              </tr>
+              <tr>
+                <td>Text</td>
+                <td>Swathi</td>
+              </tr>
+              <tr>
+                <td>Boolean</td>
+                <td>true/false</td>
+              </tr>
+            </table>
+          </table>
+        </div>
+
+        <div class="highlight orange">
+          ❌ Computer cannot understand directly!
+        </div>
+
+        <div class="definition">
+          <div class="term">🎯 Solution</div>
+          <div class="meaning">
+            Real-world data → <strong>Data Types</strong> → Convert → Binary (0
+            & 1) → Store in RAM
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Understanding RAM (VERY IMPORTANT) -->
+      <section class="section" id="ram">
+        <div class="section-title">
+          <div class="icon icon-yellow">💾</div>
+          Understanding RAM (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 RAM Building Blocks:</strong></p>
+          <ul class="notes">
+            <li><strong>RAM</strong> = Collection of bytes</li>
+            <li><strong>1 Byte</strong> = 8 Bits</li>
+            <li><strong>1 Bit</strong> = 0 or 1</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Example:</strong></p>
+          <pre>
+2GB RAM = 200 crore bytes
+Each byte = 8 bits
+
+So:
+2GB = 200 crore × 8 bits = 1600 crore bits
+
+Each bit is either 0 or 1</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          <strong>Final Truth:</strong> RAM stores EVERYTHING in binary only.
+          There is no other way!
+        </div>
+      </section>
+
+      <!-- 5. Types of Real-World Data -->
+      <section class="section" id="realworld-data">
+        <div class="section-title">
+          <div class="icon icon-blue">🌍</div>
+          Types of Real-World Data
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Data Type</th>
+              <th>Example</th>
+            </tr>
+            <tr>
+              <td><strong>Integer</strong></td>
+              <td>23</td>
+            </tr>
+            <tr>
+              <td><strong>Real Number</strong></td>
+              <td>5.11</td>
+            </tr>
+            <tr>
+              <td><strong>Character</strong></td>
+              <td>'A', "Swathi"</td>
+            </tr>
+            <tr>
+              <td><strong>Boolean</strong></td>
+              <td>Yes/No</td>
+            </tr>
+            <tr>
+              <td><strong>Audio</strong></td>
+              <td>Song</td>
+            </tr>
+            <tr>
+              <td><strong>Video</strong></td>
+              <td>Movie</td>
+            </tr>
+            <tr>
+              <td><strong>Image</strong></td>
+              <td>Photo</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="definition">
+          <div class="term">📌 Important Fact</div>
+          <div class="meaning">
+            All these different types need to be converted into 0s and 1s before
+            storage in RAM. That's why we need different data types!
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Flow of Data -->
+      <section class="section" id="data-flow">
+        <div class="section-title">
+          <div class="icon icon-orange">🔄</div>
+          Flow of Data
+        </div>
+
+        <div class="flow">
+          <div>Real-world data</div>
+          <div>→</div>
+          <div>Data Type</div>
+          <div>→</div>
+          <div>Binary (0 & 1)</div>
+          <div>→</div>
+          <div>Stored in RAM</div>
+        </div>
+
+        <div class="card">
+          <p><strong>Example Journey:</strong></p>
+          <pre>
+Number 23 (real-world)
+    ↓
+int data type (converter)
+    ↓
+00010111 (binary - 8 bits for byte representation)
+    ↓
+Stored in RAM locations</pre
+          >
+        </div>
+      </section>
+
+      <!-- 7. Types of Data Types in Java -->
+      <section class="section" id="types">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Types of Data Types in Java
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Primitive Data Types (MOST IMPORTANT)</strong></p>
+          <p style="margin-top: 12px"><strong>🔢 Integer Types:</strong></p>
+          <ul class="notes">
+            <li>byte</li>
+            <li>short</li>
+            <li>int</li>
+            <li>long</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔢 Decimal Types:</strong></p>
+          <ul class="notes">
+            <li>float</li>
+            <li>double</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔤 Character Type:</strong></p>
+          <ul class="notes">
+            <li>char</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔘 Boolean Type:</strong></p>
+          <ul class="notes">
+            <li>boolean</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Total: 8 Primitive Data Types</strong>
+        </div>
+      </section>
+
+      <!-- 8. Integer Data Types (DETAILED) -->
+      <section class="section" id="integer-types">
+        <div class="section-title">
+          <div class="icon icon-blue">🧠</div>
+          Integer Data Types (DETAILED)
+        </div>
+
+        <div class="card">
+          <p><strong>🟡 1. byte</strong></p>
+          <ul class="notes">
+            <li><strong>Memory:</strong> 1 byte = 8 bits</li>
+            <li><strong>Range:</strong> -128 to +127</li>
+            <li><strong>Code:</strong> <code>byte a = 100;</code></li>
+            <li>
+              <strong>Error Example:</strong> <code>byte a = 128;</code> → ❌
+              Out of range
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🟠 2. short</strong></p>
+          <ul class="notes">
+            <li><strong>Memory:</strong> 2 bytes = 16 bits</li>
+            <li><strong>Range:</strong> -32,768 to +32,767</li>
+            <li><strong>Code:</strong> <code>short a = 20000;</code></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔵 3. int (MOST USED)</strong></p>
+          <ul class="notes">
+            <li><strong>Memory:</strong> 4 bytes = 32 bits</li>
+            <li><strong>Range:</strong> ~ -2 billion to +2 billion</li>
+            <li><strong>Code:</strong> <code>int a = 100000;</code></li>
+            <li>
+              <strong>Default:</strong> When you write a number without suffix,
+              Java treats it as int
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔴 4. long</strong></p>
+          <ul class="notes">
+            <li><strong>Memory:</strong> 8 bytes = 64 bits</li>
+            <li><strong>Range:</strong> Very very large (beyond billions)</li>
+            <li><strong>Code:</strong> <code>long a = 10000000000L;</code></li>
+            <li>
+              <strong>⚠️ IMPORTANT:</strong> MUST add <code>L</code> suffix,
+              otherwise Java treats it as int
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 9. Formula to Find Range (IMPORTANT) -->
+      <section class="section" id="formula">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧠</div>
+          Formula to Find Range (IMPORTANT)
+        </div>
+
+        <div class="definition">
+          <div class="term">Formula</div>
+          <div class="meaning">
+            For n bits:
+            <ul class="notes" style="margin-top: 8px">
+              <li>Negative range = -2^(n-1)</li>
+              <li>Positive range = 2^(n-1) - 1</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Example (byte):</strong></p>
+          <pre>
+n = 8
+→ -2^7 to 2^7 - 1
+→ -128 to +127 ✓</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Example (int):</strong></p>
+          <pre>
+n = 32
+→ -2^31 to 2^31 - 1
+→ -2,147,483,648 to +2,147,483,647</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          This is why each data type has a specific range!
+        </div>
+      </section>
+
+      <!-- 10. Identifier (IMPORTANT) -->
+      <section class="section" id="identifier">
+        <div class="section-title">
+          <div class="icon icon-orange">🧠</div>
+          Identifier (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+int a = 10;
+ ↑
+ └─ Identifier</pre
+          >
+        </div>
+
+        <div class="definition">
+          <div class="term">What is Identifier?</div>
+          <div class="meaning">
+            Name given to a memory location. It helps identify where a value is
+            stored in RAM.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Real-life Analogy:</strong></p>
+          <pre>
+a     →  Nameplate on a house
+value →  Person living in the house
+memory location →  Physical house address</pre
+          >
+        </div>
+
+        <div class="highlight">
+          Identifiers help us access and manage memory locations easily!
+        </div>
+      </section>
+
+      <!-- 11. Important Rules -->
+      <section class="section" id="rules">
+        <div class="section-title">
+          <div class="icon icon-blue">⚠️</div>
+          Important Rules
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Rule 1 – Memory Allocation Based on Type</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            Java allocates memory based on the data type you choose
+          </p>
+          <pre style="margin-top: 8px">
+byte a;   // 1 byte allocated
+int b;    // 4 bytes allocated
+long c;   // 8 bytes allocated</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Rule 2 – Fixed Range per Type</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            Each data type has a fixed range based on memory size
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Rule 3 – Out of Range = Error</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            If you try to store a value outside the range, Java throws an error
+          </p>
+          <pre style="margin-top: 8px">
+byte a = 200;  // ❌ Error (range is -128 to 127)</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Rule 4 – Default Integer is int</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            Any number without a suffix is treated as int by default
+          </p>
+          <pre style="margin-top: 8px">
+int x = 100;     // int
+long y = 100L;   // long (with L suffix)</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Rule 5 – Large Numbers Need long + L</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            For numbers beyond int range, use long with L suffix
+          </p>
+          <pre style="margin-top: 8px">
+long a = 10000000000L;  // ✓
+long b = 10000000000;   // ❌ Error</pre
+          >
+        </div>
+      </section>
+
+      <!-- 12. Interview Important Points -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-green">🎯</div>
+          Interview Important Points
+        </div>
+
+        <div class="card">
+          <p><strong>🔥 Questions you MUST answer correctly:</strong></p>
+          <ul class="notes">
+            <li>
+              <strong>Definition:</strong> What is a data type? (Converter, not
+              just types)
+            </li>
+            <li>
+              <strong>Difference:</strong> Real data vs binary representation
+            </li>
+            <li>
+              <strong>Reason:</strong> Why multiple integer types exist (memory
+              & range tradeoff)
+            </li>
+            <li><strong>Memory:</strong> How many bytes each type uses</li>
+            <li>
+              <strong>Range:</strong> Why byte is -128 to 127, not 0 to 256
+            </li>
+            <li>
+              <strong>Formula:</strong> How to calculate range from bits
+              (2^(n-1))
+            </li>
+            <li><strong>Suffix:</strong> Why L is needed for long values</li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          These are NOT trivial! Interviewers LOVE testing data type knowledge!
+        </div>
+      </section>
+
+      <!-- 13. Final Understanding -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Final Understanding
+        </div>
+
+        <div class="highlight green">
+          <strong>👉 Data types are NOT just:</strong> int, float, double
+        </div>
+
+        <div class="card">
+          <p><strong>👉 They are:</strong></p>
+          <ul class="notes">
+            <li>Bridge between human world & computer world</li>
+            <li>Conversion mechanism from real data to binary</li>
+            <li>Memory allocation strategy</li>
+            <li>Value range provider</li>
+            <li>Foundation for all programming concepts</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>💡 Key Takeaway:</strong> Understanding data types deeply is
+          essential for writing efficient, bug-free Java code and passing
+          technical interviews!
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

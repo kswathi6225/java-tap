@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 21</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html" class="active">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 21</div>
+        <h1>Objects in Arrays <span>🎬</span></h1>
+        <p class="subtitle">
+          Storing objects in arrays – references, homogeneity, and practical
+          applications
+        </p>
+        <div class="tags">
+          <div class="tag">Objects</div>
+          <div class="tag">Arrays</div>
+          <div class="tag">References</div>
+          <div class="tag">Homogeneous</div>
+        </div>
+      </div>
+
+      <!-- 1. Introduction -->
+      <section class="section" id="intro">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Introduction
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Till now:</strong><br />
+          Arrays stored primitive data (int, float, char, etc.)<br /><br />
+          <strong>👉 Today:</strong><br />
+          Can arrays store objects? ✅ YES<br />
+          Understanding real-world usage + drawbacks
+        </div>
+      </section>
+
+      <!-- 2. Objects in Array -->
+      <section class="section" id="objects">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Objects in Array
+        </div>
+
+        <div class="definition">
+          <div class="term">Key Concept:</div>
+          <div class="meaning">
+            Array can store: Primitive types ✅ and Objects ✅
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Example: Student Class -->
+      <section class="section" id="example">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Example: Student Class
+        </div>
+
+        <div class="card">
+          <pre>
+class Student {
+    String name;
+    int id;
+    String branch;
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Creating Objects</strong></p>
+          <pre>
+Student s1 = new Student();
+Student s2 = new Student();
+Student s3 = new Student();</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Assign Values</strong></p>
+          <pre>
+s1.name = "Siddhu";
+s1.id = 1;
+s1.branch = "CSE";
+
+s2.name = "Shahat";
+s2.id = 2;
+s2.branch = "Mechanical";
+
+s3.name = "Chalan";
+s3.id = 3;
+s3.branch = "Civil";</pre
+          >
+        </div>
+      </section>
+
+      <!-- 4. Storing Objects in Array -->
+      <section class="section" id="storing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Storing Objects in Array
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Create Array</strong></p>
+          <pre>
+Student[] ar = new Student[3];
+
+👉 Array stores Student type objects</pre
+          >
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ Default Value:</strong><br />
+          ar[0] → null<br />
+          ar[1] → null<br />
+          ar[2] → null<br />
+          <strong>✔ Because: Objects default = null</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Store Objects</strong></p>
+          <pre>
+ar[0] = s1;
+ar[1] = s2;
+ar[2] = s3;</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Access Data</strong></p>
+          <pre>
+System.out.println(ar[0].name);
+System.out.println(ar[0].id);
+System.out.println(ar[0].branch);</pre
+          >
+        </div>
+      </section>
+
+      <!-- 5. Important Concept: Reference -->
+      <section class="section" id="reference">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Important Concept: Reference
+        </div>
+
+        <div class="highlight">
+          <strong
+            >👉 Array stores reference (address) of object<br />
+            👉 Not actual object</strong
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Example:</strong></p>
+          <pre>
+ar[0] = s1;
+
+👉 Both point to same object</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          <strong>🔥 RESULT</strong><br />
+          <code>ar[0].name = "Alex";</code><br />
+          <code>System.out.println(s1.name);</code><br />
+          <strong>👉 Output → Alex</strong><br />
+          <strong>✔ Because: Pass by reference concept</strong>
+        </div>
+      </section>
+
+      <!-- 6. Multiple References to Same Object -->
+      <section class="section" id="multiple">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Multiple References to Same Object
+        </div>
+
+        <div class="card">
+          <pre>
+ar[0] = s1;
+ar[1] = s1;
+
+👉 Both indices point to SAME object
+✔ Any change affects both</pre
+          >
+        </div>
+      </section>
+
+      <!-- 7. Important Rule -->
+      <section class="section" id="rule">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Important Rule (VERY IMPORTANT)
+        </div>
+
+        <div class="highlight">
+          <strong>❗ Arrays are Homogeneous</strong><br />
+          👉 Same type only allowed
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ WRONG</strong><br />
+          <code>Customer c = new Customer();</code><br />
+          <code>ar[3] = c; // ERROR</code><br /><br />
+          <strong>👉 Because:</strong><br />
+          Array = Student type<br />
+          Object = Customer type<br />
+          ❌ Type mismatch error
+        </div>
+
+        <div class="card">
+          <p>
+            <strong>✔ Arrays store:</strong><br />
+            👉 Only SAME TYPE objects
+          </p>
+        </div>
+      </section>
+
+      <!-- 8. Real World Example -->
+      <section class="section" id="realworld">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Real World Example
+        </div>
+
+        <div class="card">
+          <p><strong>👉 E-commerce app:</strong></p>
+          <ul class="notes">
+            <li>Store customers in array</li>
+            <li>Access using index</li>
+            <li><code>customers[49]</code> → 50th customer</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 9. Drawbacks of Arrays -->
+      <section class="section" id="drawbacks">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Drawbacks of Arrays
+        </div>
+
+        <div class="card">
+          <p><strong>❌ 1. Homogeneous Data</strong></p>
+          <ul class="notes">
+            <li>Only same type allowed</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>❌ 2. Fixed Size (Static)</strong></p>
+          <pre>
+int[] a = new int[5];
+
+👉 Cannot increase/decrease</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>❌ 3. Array Index Out of Bounds</strong></p>
+          <pre>
+a[5] = 60;
+
+👉 ERROR
+👉 Exception: ArrayIndexOutOfBoundsException</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>❌ 4. Contiguous Memory Requirement</strong></p>
+          <pre>
+👉 Array needs: Continuous memory
+
+💡 Problem:
+RAM = fragmented
+May not get continuous space
+
+👉 Large arrays may fail</pre
+          >
+        </div>
+      </section>
+
+      <!-- 10. Array Declaration Types -->
+      <section class="section" id="declaration">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Array Declaration Types
+        </div>
+
+        <div class="grid-2">
+          <div class="highlight green">
+            <strong>✔ Valid</strong><br />
+            <code>int[] a;</code><br />
+            <code>int a[];</code>
+          </div>
+          <div class="highlight orange">
+            <strong>❌ Invalid</strong><br />
+            <code>[] int a; // WRONG</code><br /><br />
+            <strong>👉 Rule: Data type FIRST</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. Array Initialization Shortcut -->
+      <section class="section" id="shortcut">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Array Initialization (Shortcut)
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Instead of:</strong></p>
+          <pre>
+int[] a = new int[3];
+a[0] = 10;
+a[1] = 20;
+a[2] = 30;</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Use:</strong></p>
+          <pre>int[] a = {10, 20, 30};</pre>
+        </div>
+      </section>
+
+      <!-- 12. 2D Array Initialization -->
+      <section class="section" id="2d-init">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          2D Array Initialization
+        </div>
+
+        <div class="card">
+          <pre>
+int[][] a = {
+    {10, 20},
+    {30, 40}
+};
+
+✔ Concept:
+👉 2D array = multiple 1D arrays</pre
+          >
+        </div>
+      </section>
+
+      <!-- 13. Final Key Points -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Final Key Points
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Arrays can store objects</li>
+            <li>✔ Objects stored as references</li>
+            <li>✔ Pass by reference concept</li>
+            <li>✔ Arrays are homogeneous</li>
+            <li>✔ Fixed size</li>
+            <li>✔ Contiguous memory needed</li>
+            <li>✔ Supports shortcut initialization</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>⚡ FINAL REVISION</strong><br />
+          👉 Objects in array = MOST IMPORTANT 🔥<br />
+          👉 Pass by reference = INTERVIEW QUESTION<br />
+          👉 Drawbacks = MUST REMEMBER
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

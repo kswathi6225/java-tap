@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 17</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 17</div>
+        <h1>Class & Object <span>🏛️</span></h1>
+        <p class="subtitle">
+          Core OOP concepts – blueprint vs real entity, memory representation
+        </p>
+        <div class="tags">
+          <div class="tag">Class</div>
+          <div class="tag">Object</div>
+          <div class="tag">OOP</div>
+          <div class="tag">Static vs Non-static</div>
+        </div>
+      </div>
+
+      <!-- 1. Session Overview -->
+      <section class="section" id="overview">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Session Overview
+        </div>
+
+        <div class="card">
+          <p><strong>Revision + Strengthening Concepts:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Methods (previous topic)</li>
+            <li>Object-Oriented Basics</li>
+            <li>Class & Object (Practical Implementation)</li>
+            <li>Naming Conventions</li>
+            <li>Static vs Non-static (Intro)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. Why This Session is Important -->
+      <section class="section" id="importance">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Why This Session is Important
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Around 70% of Java basics are already covered</strong
+          ><br />
+          <strong>👉 Remaining concepts depend on these</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>Important Insight:</strong></p>
+          <ul class="notes">
+            <li>Arrays → Objects</li>
+            <li>Strings → Objects</li>
+            <li>OOP → Depends on Class & Object</li>
+          </ul>
+        </div>
+
+        <div class="highlight yellow">
+          <strong>👉 If this is weak → everything becomes confusing</strong>
+        </div>
+      </section>
+
+      <!-- 3. Class & Object -->
+      <section class="section" id="class-object">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Class & Object (Core Concept)
+        </div>
+
+        <div class="grid-2">
+          <div class="highlight">
+            <strong>📌 Class = Blueprint</strong>
+          </div>
+          <div class="highlight green">
+            <strong>📌 Object = Real Entity</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>🚗 Example: Car Class</strong></p>
+          <pre>
+class Car {
+    String name;
+    float cost;
+    float mileage;
+
+    public void start() {
+        System.out.println("Car is starting");
+    }
+
+    public void accelerate() {
+        System.out.println("Car is accelerating");
+    }
+
+    public void stop() {
+        System.out.println("Car is stopping");
+    }
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Explanation:</strong></p>
+          <ul class="notes">
+            <li><strong>Variables → State (Properties)</strong></li>
+            <li>name, cost, mileage</li>
+            <li>👉 These are called <strong>Instance Variables</strong></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>Methods → Behavior</strong></li>
+            <li>start(), accelerate(), stop()</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Object Creation -->
+      <section class="section" id="creation">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Object Creation
+        </div>
+
+        <div class="card">
+          <pre>Car c = new Car();</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>new Car()</strong></td>
+                <td>Object created in Heap</td>
+              </tr>
+              <tr>
+                <td><strong>c</strong></td>
+                <td>Reference variable</td>
+              </tr>
+              <tr>
+                <td><strong>=</strong></td>
+                <td>Assignment</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. Accessing Data -->
+      <section class="section" id="accessing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Accessing Data
+        </div>
+
+        <div class="card">
+          <pre>
+System.out.println(c.name);
+System.out.println(c.cost);
+System.out.println(c.mileage);</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Default Values:</strong></p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>String</strong></td>
+                <td>null</td>
+              </tr>
+              <tr>
+                <td><strong>float</strong></td>
+                <td>0.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. Assigning Values -->
+      <section class="section" id="assigning">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Assigning Values
+        </div>
+
+        <div class="card">
+          <pre>
+c.name = "BMW";
+c.cost = 15.8f;
+c.mileage = 20.8f;</pre
+          >
+        </div>
+      </section>
+
+      <!-- 7. Calling Methods -->
+      <section class="section" id="calling">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Calling Methods
+        </div>
+
+        <div class="card">
+          <pre>
+c.start();
+c.accelerate();
+c.stop();</pre
+          >
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Wrong Way:</strong><br />
+          <code>System.out.println(c.start()); // ERROR</code>
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Reason:</strong></p>
+          <ul class="notes">
+            <li>👉 start() → returns void</li>
+            <li>👉 println() needs a value</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 8. Memory Representation -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Memory Representation (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Two Memory Areas:</strong></p>
+          <ul class="notes">
+            <li><strong>✔ Stack</strong> – main method, reference variables</li>
+            <li><strong>✔ Heap</strong> – objects</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Flow:</strong></p>
+          <ul class="notes">
+            <li>Main method → Stack</li>
+            <li>Object → Heap</li>
+            <li>Reference → Points to object</li>
+            <li>Method call → New stack frame</li>
+            <li>After execution → removed</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 9. Multiple Objects Concept -->
+      <section class="section" id="multiple">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Multiple Objects Concept
+        </div>
+
+        <div class="card">
+          <pre>
+Car c1 = new Car();
+Car c2 = new Car();</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>💡 Important:</strong><br />
+          👉 Each object is independent
+        </div>
+
+        <div class="card">
+          <pre>
+c1.name = "BMW";
+System.out.println(c2.name);</pre
+          >
+        </div>
+
+        <div class="highlight green"><strong>🧠 Output:</strong> null</div>
+
+        <div class="card">
+          <p><strong>❗ Why?</strong></p>
+          <ul class="notes">
+            <li>👉 Different memory locations</li>
+            <li>👉 No connection between objects</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 10. Key Concept -->
+      <section class="section" id="key">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Key Concept
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Same class → Multiple objects</li>
+            <li>✔ Each object → Separate data</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 11. Method Types (Revision) -->
+      <section class="section" id="method-types">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Method Types (Revision)
+        </div>
+
+        <div class="card">
+          <p><strong>In Car class:</strong></p>
+          <pre>
+public void start()
+
+👉 Type: No Input, No Output</pre
+          >
+        </div>
+      </section>
+
+      <!-- 12. Static vs Non-Static -->
+      <section class="section" id="static">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Static vs Non-Static (INTRO)
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Problem:</strong><br />
+          <code>add(); // error</code>
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Reason:</strong></p>
+          <ul class="notes">
+            <li>👉 main() → static</li>
+            <li>👉 add() → non-static</li>
+            <li>
+              👉 <strong>Static cannot access non-static directly</strong>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Solution 1: Make Method Static</strong></p>
+          <pre>public static int add()</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Solution 2: Use Object</strong></p>
+          <pre>
+Day17 d = new Day17();
+d.add();</pre
+          >
+        </div>
+      </section>
+
+      <!-- 13. Return Type Usage -->
+      <section class="section" id="return-usage">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Return Type Usage
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Storing Value</strong></p>
+          <pre>
+int result = d.add();
+System.out.println(result);</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Direct Use</strong></p>
+          <pre>System.out.println(d.add());</pre>
+        </div>
+
+        <div class="highlight">
+          <strong>❗ Important:</strong><br />
+          👉 Works only if return type is NOT void
+        </div>
+      </section>
+
+      <!-- 14. Naming Conventions -->
+      <section class="section" id="naming">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Naming Conventions (VERY IMPORTANT)
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>🟣 Class → Pascal Case</strong></p>
+            <ul class="notes" style="margin-top: 8px">
+              <li>ClassName</li>
+              <li>CarModel</li>
+            </ul>
+          </div>
+          <div class="card">
+            <p><strong>🟢 Method & Variables → Camel Case</strong></p>
+            <ul class="notes" style="margin-top: 8px">
+              <li>methodName()</li>
+              <li>calculateSum()</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Bad Practice:</strong><br />
+          classname | METHODNAME
+        </div>
+      </section>
+
+      <!-- 15. Types of Methods -->
+      <section class="section" id="types-methods">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Types of Methods
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">User-Defined Methods</div>
+            <ul class="notes">
+              <li>👉 Created by programmer</li>
+              <li>add()</li>
+              <li>start()</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Built-in Methods</div>
+            <ul class="notes">
+              <li>Examples:</li>
+              <li>nextInt()</li>
+              <li>println()</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16. Built-in Classes -->
+      <section class="section" id="builtin-classes">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Built-in Classes
+        </div>
+
+        <div class="card">
+          <p><strong>Examples:</strong></p>
+          <ul class="notes">
+            <li>Scanner</li>
+            <li>String</li>
+            <li>StringBuilder</li>
+            <li>Thread</li>
+          </ul>
+        </div>
+
+        <div class="highlight">👉 Java has 5000+ built-in classes</div>
+      </section>
+
+      <!-- 17. Scanner Example -->
+      <section class="section" id="scanner">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Scanner Example
+        </div>
+
+        <div class="card">
+          <pre>
+Scanner sc = new Scanner(System.in);
+int n = sc.nextInt();</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Points:</strong></p>
+          <ul class="notes">
+            <li>✔ nextInt() → built-in method</li>
+            <li>✔ Scanner → built-in class</li>
+            <li>✔ Uses camelCase</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 18. Coding Best Practices -->
+      <section class="section" id="practices">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Coding Best Practices
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Follow naming conventions</li>
+            <li>✔ Give meaningful method names</li>
+            <li>✔ Don't write random names</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Example:</strong></p>
+          <pre>
+calculateTotal()
+
+Better than:
+
+abc()</pre
+          >
+        </div>
+      </section>
+
+      <!-- 19. Real-World Insight -->
+      <section class="section" id="realworld">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Real-World Insight (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 In companies:</strong></p>
+          <ul class="notes">
+            <li>Work in teams</li>
+            <li>Code is shared</li>
+            <li>Methods help modular coding</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Important Rules:</strong></p>
+          <ul class="notes">
+            <li>✔ Don't share company code</li>
+            <li>✔ Don't copy code to external tools</li>
+            <li>✔ Use official tools only</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>🔑 MOST IMPORTANT:</strong><br />
+          ✔ Class = Blueprint<br />
+          ✔ Object = Real<br />
+          ✔ Heap vs Stack<br />
+          ✔ Multiple objects<br />
+          ✔ Static vs Non-static<br />
+          ✔ Naming convention
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

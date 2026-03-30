@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 11</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html" class="active"
+          >➕ Day 11 – Increment & Decrement</a
+        >
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 11</div>
+        <h1>Increment & Decrement <span>➕</span></h1>
+        <p class="subtitle">Pre & Post increment/decrement operators in Java</p>
+        <div class="tags">
+          <div class="tag">Operators</div>
+          <div class="tag">Pre/Post</div>
+          <div class="tag">Expressions</div>
+          <div class="tag">Overflow</div>
+        </div>
+      </div>
+
+      <!-- 1. What is Increment & Decrement? -->
+      <section class="section" id="definition">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          What is Increment & Decrement?
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Increment (++)</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            Increases value by 1
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Decrement (--)</strong></p>
+          <p style="margin-top: 8px; color: var(--muted)">
+            Decreases value by 1
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Basic Example:</strong></p>
+          <pre>
+int a = 5;
+
+a++;   // increment
+a--;   // decrement</pre
+          >
+        </div>
+      </section>
+
+      <!-- 2. Why Do We Use It? -->
+      <section class="section" id="why">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Why Do We Use It?
+        </div>
+
+        <div class="card">
+          <p><strong>Instead of writing:</strong></p>
+          <pre style="margin-top: 8px">a = a + 1;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>We write:</strong></p>
+          <pre style="margin-top: 8px">a++;</pre>
+        </div>
+
+        <div class="highlight green">
+          ✔ Short | ✔ Cleaner | ✔ Industry standard
+        </div>
+      </section>
+
+      <!-- 3. Increment Operator -->
+      <section class="section" id="increment">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Increment Operator
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong> <code>a++</code></p>
+        </div>
+
+        <div class="definition">
+          <div class="term">Means:</div>
+          <div class="meaning">a = a + 1</div>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Example:</strong></p>
+          <pre>
+int a = 5;
+a++;
+System.out.println(a); // 6</pre
+          >
+        </div>
+      </section>
+
+      <!-- 4. Decrement Operator -->
+      <section class="section" id="decrement">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Decrement Operator
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong> <code>a--</code></p>
+        </div>
+
+        <div class="definition">
+          <div class="term">Means:</div>
+          <div class="meaning">a = a - 1</div>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Example:</strong></p>
+          <pre>
+int a = 5;
+a--;
+System.out.println(a); // 4</pre
+          >
+        </div>
+      </section>
+
+      <!-- 5. Types of Increment/Decrement -->
+      <section class="section" id="types">
+        <div class="section-title">
+          <div class="icon icon-yellow">⚡</div>
+          Types of Increment/Decrement
+        </div>
+
+        <div class="card">
+          <p><strong>There are 2 types:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>✅ Pre Increment / Decrement</strong> (++a / --a)</li>
+            <li><strong>✅ Post Increment / Decrement</strong> (a++ / a--)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. PRE INCREMENT -->
+      <section class="section" id="pre-increment">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          PRE INCREMENT (++a)
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">First increase → then use</div>
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Example:</strong></p>
+          <pre>
+int a = 5;
+int b = ++a;
+
+System.out.println(a); // 6
+System.out.println(b); // 6</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>🔥 Rule:</strong> Increase first → Then assign
+        </div>
+      </section>
+
+      <!-- 7. POST INCREMENT -->
+      <section class="section" id="post-increment">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          POST INCREMENT (a++)
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">First use → then increase</div>
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Example:</strong></p>
+          <pre>
+int a = 5;
+int b = a++;
+
+System.out.println(a); // 6
+System.out.println(b); // 5</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>🔥 Rule:</strong> Use first → Then increase
+        </div>
+      </section>
+
+      <!-- 8. IMPORTANT CONCEPT -->
+      <section class="section" id="key-concept">
+        <div class="section-title">
+          <div class="icon icon-green">🎯</div>
+          IMPORTANT CONCEPT (VERY IMPORTANT)
+        </div>
+
+        <div class="definition">
+          <div class="term">Key Point:</div>
+          <div class="meaning">
+            Pre/Post DO NOT affect the original variable immediately in
+            thinking. They affect where the value is used (like b).
+          </div>
+        </div>
+
+        <div class="highlight">
+          "a value remains same logic, b changes based on pre/post"
+        </div>
+      </section>
+
+      <!-- 9. Easy Trick -->
+      <section class="section" id="trick">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧠</div>
+          Easy Trick (REMEMBER THIS)
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Type</th>
+              <th>Rule</th>
+            </tr>
+            <tr>
+              <td><strong>++a</strong></td>
+              <td>First increase → then use</td>
+            </tr>
+            <tr>
+              <td><strong>a++</strong></td>
+              <td>First use → then increase</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10. Example (VERY IMPORTANT) -->
+      <section class="section" id="example">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Example (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int a = 5;
+int b = ++a + ++a;</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Step by step:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>First ++a → 6</li>
+            <li>Second ++a → 7</li>
+            <li>b = 6 + 7 = 13</li>
+            <li>a = 7</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Another Example:</strong></p>
+          <pre>
+int a = 5;
+int b = a++ + a++;</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Step by step:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>First a++ → use 5 → then becomes 6</li>
+            <li>Second a++ → use 6 → then becomes 7</li>
+            <li>b = 5 + 6 = 11</li>
+            <li>a = 7</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Mixed Example:</strong></p>
+          <pre>
+int a = 5;
+int b = ++a + a++;
+
+Step by step:
+++a → 6
+a++ → use 6 → then becomes 7
+
+b = 6 + 6 = 12
+a = 7</pre
+          >
+        </div>
+      </section>
+
+      <!-- 11. Complex Expression -->
+      <section class="section" id="complex">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Complex Expression (INTERVIEW LEVEL)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int a = 5;
+int b = a++ + ++a + a-- + --a + ++a + --a;</pre
+          >
+        </div>
+
+        <div class="highlight yellow">
+          <strong>Final Answer:</strong>
+          <br />✔ a = 5 <br />✔ b = 35
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ Solve step-by-step on paper always!</strong>
+        </div>
+      </section>
+
+      <!-- 12. VERY IMPORTANT RULE -->
+      <section class="section" id="important-rule">
+        <div class="section-title">
+          <div class="icon icon-green">⚠️</div>
+          VERY IMPORTANT RULE
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Always:</strong>
+          <br />✔ Write step by step <br />✔ Don't solve in mind <br />✔ Track
+          value after each operation
+        </div>
+      </section>
+
+      <!-- 13. Byte Overflow -->
+      <section class="section" id="overflow">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Byte Overflow (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+byte b = 127;
+b++;
+b++;
+System.out.println(b);</pre
+          >
+        </div>
+
+        <div class="highlight orange"><strong>Output:</strong> -127</div>
+
+        <div class="card">
+          <p><strong>🧠 Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Byte range:</strong> -128 to 127</li>
+            <li><strong>After 127:</strong> wraps to -128</li>
+            <li><strong>Then:</strong> -127</li>
+          </ul>
+        </div>
+
+        <div class="definition">
+          <div class="term">Called:</div>
+          <div class="meaning">Wrapping / Overflow</div>
+        </div>
+      </section>
+
+      <!-- 14. Important Concept -->
+      <section class="section" id="init-exec">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Important Concept
+        </div>
+
+        <div class="definition">
+          <div class="term">Initialization vs Execution:</div>
+          <div class="meaning">
+            <strong>Initialization:</strong> Error if out of range <br /><strong
+              >Execution:</strong
+            >
+            Wrap around happens
+          </div>
+        </div>
+      </section>
+
+      <!-- 15. Type Casting Connection -->
+      <section class="section" id="casting">
+        <div class="section-title">
+          <div class="icon icon-blue">🔀</div>
+          Type Casting Connection
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+double a = 128;
+byte b = (byte)a;</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Why explicit?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>double</strong> = 8 bytes</li>
+            <li><strong>byte</strong> = 1 byte</li>
+            <li>Data loss → explicit casting required</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 16. Interview Answer -->
+      <section class="section" id="interview-answer">
+        <div class="section-title">
+          <div class="icon icon-orange">🎯</div>
+          Interview Answer (PERFECT WAY)
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong:</strong></p>
+          <p style="margin-top: 8px; color: var(--accent)">
+            "Data loss happens"
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Correct:</strong></p>
+          <p style="margin-top: 8px; color: var(--accent3)">
+            "Double occupies 8 bytes and byte occupies 1 byte. Assigning a
+            larger data type to a smaller one causes data loss, so explicit type
+            casting (narrowing) is required."
+          </p>
+        </div>
+      </section>
+
+      <!-- 17. Final Quick Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Final Quick Revision
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>++</strong> → increment</li>
+            <li><strong>--</strong> → decrement</li>
+            <li><strong>++a</strong> → first increase</li>
+            <li><strong>a++</strong> → first use</li>
+            <li><strong>Pre/Post</strong> affects result variable</li>
+            <li><strong>Always</strong> solve step-by-step</li>
+            <li><strong>Byte overflow</strong> → wrapping</li>
+            <li><strong>Explicit casting</strong> → for big → small</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

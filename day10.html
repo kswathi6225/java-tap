@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 10</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html" class="active">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 10</div>
+        <h1>Type Casting <span>🔀</span></h1>
+        <p class="subtitle">
+          Converting between data types – Implicit & Explicit
+        </p>
+        <div class="tags">
+          <div class="tag">Data Types</div>
+          <div class="tag">Widening</div>
+          <div class="tag">Narrowing</div>
+          <div class="tag">Conversion</div>
+        </div>
+      </div>
+
+      <!-- 1. What is Type Casting? -->
+      <section class="section" id="definition">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          What is Type Casting?
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">
+            Type casting = Converting one data type into another data type
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Also called:</strong> Type Conversion</p>
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+int a = 10;
+double b = a;   // int → double</pre
+          >
+        </div>
+      </section>
+
+      <!-- 2. Types of Type Casting -->
+      <section class="section" id="types">
+        <div class="section-title">
+          <div class="icon icon-orange">⚡</div>
+          Types of Type Casting
+        </div>
+
+        <div class="card">
+          <p><strong>There are 2 types:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>✅ Implicit Type Casting</strong> (Automatic)</li>
+            <li><strong>❌ Explicit Type Casting</strong> (Manual)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. Implicit Type Casting -->
+      <section class="section" id="implicit">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Implicit Type Casting (VERY IMPORTANT)
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">
+            Conversion of smaller data type → larger data type automatically. No
+            manual work needed. Done by Java automatically.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>📊 Data Type Order (IMPORTANT):</strong></p>
+          <pre style="margin-top: 12px">
+byte → short → int → long → float → double
+            ↘ char ↗</pre
+          >
+          <p style="margin-top: 12px; color: var(--muted)">
+            Size increasing → conversion allowed
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Examples:</strong></p>
+          <pre>
+byte a = 10;
+int b = a;      // byte → int ✔
+
+int x = 50;
+double y = x;   // int → double ✔</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Special Case: char → int</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Allowed:</strong> Yes</li>
+            <li>
+              <strong>Why:</strong> Java uses Unicode; characters internally
+              stored as numbers
+            </li>
+          </ul>
+          <pre style="margin-top: 12px">
+char ch = 'A';
+int val = ch;   // 65</pre
+          >
+        </div>
+      </section>
+
+      <!-- 4. Important Exception -->
+      <section class="section" id="exception">
+        <div class="section-title">
+          <div class="icon icon-yellow">💡</div>
+          Important Exception (INTERVIEW)
+        </div>
+
+        <div class="card">
+          <p><strong>❓ Question:</strong> Can we convert long → float?</p>
+        </div>
+
+        <div class="highlight green">
+          <strong>✔ Answer: YES ✅</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>long:</strong> Uses base-2 format</li>
+            <li>
+              <strong>float:</strong> Uses IEEE format (compressed storage)
+            </li>
+            <li>Float can store larger range due to special representation</li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ But:</strong> Precision loss may occur!
+        </div>
+      </section>
+
+      <!-- 5. Real Meaning -->
+      <section class="section" id="real-meaning">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Real Meaning (BEST EXPLANATION)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Think like containers:</strong></p>
+          <table class="table-wrap">
+            <table>
+              <tr>
+                <th>Small → Big</th>
+                <th>Result</th>
+              </tr>
+              <tr>
+                <td>1L → 2L</td>
+                <td>No overflow</td>
+              </tr>
+              <tr>
+                <td>2L → 4L</td>
+                <td>No overflow</td>
+              </tr>
+            </table>
+          </table>
+        </div>
+
+        <div class="highlight">
+          <strong>✔ Smaller → Larger = SAFE</strong> (no data loss)
+        </div>
+      </section>
+
+      <!-- 6. Another Name -->
+      <section class="section" id="widening">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Another Name
+        </div>
+
+        <div class="definition">
+          <div class="term">Implicit type casting</div>
+          <div class="meaning">= WIDENING</div>
+        </div>
+
+        <div class="highlight">
+          Data gets wider as it moves to a larger container!
+        </div>
+      </section>
+
+      <!-- 7. Explicit Type Casting -->
+      <section class="section" id="explicit">
+        <div class="section-title">
+          <div class="icon icon-orange">🚫</div>
+          Explicit Type Casting
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">
+            Converting larger → smaller data type manually
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Risk:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Data loss ❌</li>
+            <li>Overflow ❌</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong Code:</strong></p>
+          <pre>
+double a = 45.7;
+int b = a;   // ERROR</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Solution (Manual Casting):</strong></p>
+          <pre>
+double a = 45.7;
+int b = (int) a;   // 45</pre
+          >
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ Important:</strong> Decimal part will be LOST (45.7 → 45)
+        </div>
+      </section>
+
+      <!-- 8. Explicit = Narrowing -->
+      <section class="section" id="narrowing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧠</div>
+          Explicit = Narrowing
+        </div>
+
+        <div class="definition">
+          <div class="term">Another name:</div>
+          <div class="meaning">Explicit type casting = NARROWING</div>
+        </div>
+
+        <div class="highlight">
+          Data gets narrower/squeezed into a smaller container!
+        </div>
+      </section>
+
+      <!-- 9. Summary Table -->
+      <section class="section" id="summary-table">
+        <div class="section-title">
+          <div class="icon icon-blue">📊</div>
+          Summary Table
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Type</th>
+              <th>Direction</th>
+              <th>Automatic</th>
+              <th>Risk</th>
+            </tr>
+            <tr>
+              <td><strong>Implicit</strong></td>
+              <td>Small → Big</td>
+              <td>Yes</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>Explicit</strong></td>
+              <td>Big → Small</td>
+              <td>No</td>
+              <td>Yes</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10. Full Example -->
+      <section class="section" id="full-example">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Full Example (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <pre>
+byte a = 10;
+double b = a;     // implicit
+
+double x = 45.7;
+int y = (int)x;   // explicit
+
+System.out.println(b); // 10.0
+System.out.println(y); // 45</pre
+          >
+        </div>
+      </section>
+
+      <!-- 11. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-green">🎯</div>
+          Interview Questions (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Be ready to answer:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>What is type casting?</strong></li>
+            <li><strong>Difference between implicit & explicit?</strong></li>
+            <li><strong>What is widening?</strong></li>
+            <li><strong>What is narrowing?</strong></li>
+            <li><strong>Can long → float?</strong> (TRICK QUESTION)</li>
+            <li><strong>Why char → int works?</strong></li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          These are VERY common interview questions!
+        </div>
+      </section>
+
+      <!-- 12. Extra Important Concept -->
+      <section class="section" id="extra">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Extra Important Concept
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Java internally:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Integer:</strong> Uses Base 2 format</li>
+            <li><strong>Float/Double:</strong> Uses IEEE format</li>
+          </ul>
+        </div>
+
+        <div class="highlight green">
+          That's why conversions behave differently!
+        </div>
+      </section>
+
+      <!-- 13. Final Quick Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Final Quick Revision
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>
+              <strong>Type casting</strong> = conversion between data types
+            </li>
+            <li><strong>Implicit</strong> = small → big (automatic)</li>
+            <li><strong>Explicit</strong> = big → small (manual)</li>
+            <li><strong>Widening & Narrowing</strong> key terms</li>
+            <li><strong>Precision loss</strong> in explicit casting</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

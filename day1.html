@@ -1,0 +1,2103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 1</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 16px 60px;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Collapsible */
+      details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      summary {
+        padding: 14px 18px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        user-select: none;
+        list-style: none;
+        transition: background 0.2s;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::before {
+        content: "▶";
+        font-size: 10px;
+        color: var(--accent);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      details[open] summary::before {
+        transform: rotate(90deg);
+      }
+      summary:hover {
+        background: var(--surface2);
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        border-top: 1px solid var(--border);
+        margin-top: -1px;
+      }
+      .details-body ul.notes {
+        margin-top: 12px;
+      }
+
+      /* Diagram / Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0;
+        margin: 16px 0;
+      }
+      .flow-node {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 100px;
+      }
+      .flow-node .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .flow-arrow {
+        color: var(--muted);
+        font-size: 18px;
+        padding: 0 8px;
+        flex-shrink: 0;
+      }
+      .flow-node.blue {
+        border-color: rgba(121, 192, 255, 0.4);
+        color: var(--accent2);
+      }
+      .flow-node.orange {
+        border-color: rgba(247, 129, 102, 0.4);
+        color: var(--accent);
+      }
+      .flow-node.green {
+        border-color: rgba(86, 211, 100, 0.4);
+        color: var(--accent3);
+      }
+      .flow-node.yellow {
+        border-color: rgba(227, 179, 65, 0.4);
+        color: var(--accent4);
+      }
+
+      /* SVG Diagrams */
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      .diagram-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Summary box */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .summary-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        text-align: center;
+      }
+      .summary-card .emoji {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .summary-card .s-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .summary-card .s-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* Badge pill */
+      .pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .pill-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .pill-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .pill-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+
+      /* Interview tips */
+      .interview-tip {
+        background: rgba(227, 179, 65, 0.07);
+        border: 1px solid rgba(227, 179, 65, 0.25);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .interview-tip .tip-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent4);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html" class="active">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">� Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 1</div>
+        <h1>Orientation &amp; <span>Web Development</span> Fundamentals</h1>
+        <p class="subtitle">
+          Introduction to the course, placement landscape, web applications, and
+          full stack architecture.
+        </p>
+        <div class="tags">
+          <span class="tag">Web App</span>
+          <span class="tag">Client-Server</span>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">React</span>
+          <span class="tag">Java</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">Full Stack</span>
+        </div>
+      </div>
+
+      <!-- 1. Industry Reality Check -->
+      <section class="section" id="reality">
+        <div class="section-title">
+          <div class="icon icon-orange">🎯</div>
+          Industry Reality Check
+        </div>
+
+        <div class="highlight orange">
+          Only <strong>12 out of ~300</strong> students were confident to solve
+          even <strong>1 out of 4</strong> coding questions from an active
+          Infosys drive. This is the <strong>skill gap</strong> the course
+          addresses.
+        </div>
+
+        <details open>
+          <summary>💼 Infosys Hiring Roles (2025–26)</summary>
+          <div class="details-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Package</th>
+                    <th>Requirement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Digital Specialist Engineer</strong></td>
+                    <td>₹7 LPA</td>
+                    <td>Solve ≥1 out of 4 questions</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Specialist Programmer L1</strong></td>
+                    <td>₹11 LPA</td>
+                    <td>Higher proficiency</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Specialist Programmer L2</strong></td>
+                    <td>₹16 LPA</td>
+                    <td>Higher proficiency</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Specialist Programmer L3</strong></td>
+                    <td>₹21 LPA</td>
+                    <td>Solve all 3 out of 4 questions in 3 hrs</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ul class="notes">
+              <li>
+                Duration: <strong>3 hours</strong>, 4 problem statements, solve
+                any <strong>3</strong>
+              </li>
+              <li>
+                Topics tested: DP, Arrays, Strings, Sliding Window, Graphs
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary>📉 Why Does the System Fail Students?</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>
+                200+ exams in 4 years — all <strong>pen &amp; paper</strong>, no
+                coding practice
+              </li>
+              <li>
+                Companies test on <strong>coding editors</strong> — students
+                never practiced this format
+              </li>
+              <li>
+                College curriculum ≠ Industry expectations →
+                <strong>Skill Gap</strong>
+              </li>
+              <li>
+                Resume has skills listed but
+                <strong>no real understanding</strong> behind them
+              </li>
+              <li>
+                Students wait months after "We'll get back to you" —
+                <strong>wasted time</strong>
+              </li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <!-- 2. The Interview Journey -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-blue">🗺️</div>
+          The Typical Interview Journey
+        </div>
+
+        <div class="diagram-wrap">
+          <svg
+            width="780"
+            height="120"
+            viewBox="0 0 780 120"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Boxes -->
+            <rect
+              x="10"
+              y="30"
+              width="110"
+              height="56"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="65"
+              y="55"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Apply on
+            </text>
+            <text
+              x="65"
+              y="72"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              LinkedIn/Portal
+            </text>
+
+            <line
+              x1="120"
+              y1="58"
+              x2="150"
+              y2="58"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <rect
+              x="150"
+              y="30"
+              width="110"
+              height="56"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="205"
+              y="55"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Resume
+            </text>
+            <text
+              x="205"
+              y="72"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              ATS Screening
+            </text>
+
+            <line
+              x1="260"
+              y1="58"
+              x2="290"
+              y2="58"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <rect
+              x="290"
+              y="30"
+              width="110"
+              height="56"
+              rx="8"
+              fill="#1c2330"
+              stroke="#e3b341"
+              stroke-width="1.5"
+            />
+            <text
+              x="345"
+              y="55"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Aptitude
+            </text>
+            <text
+              x="345"
+              y="72"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Round 1
+            </text>
+
+            <line
+              x1="400"
+              y1="58"
+              x2="430"
+              y2="58"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <rect
+              x="430"
+              y="30"
+              width="110"
+              height="56"
+              rx="8"
+              fill="#1c2330"
+              stroke="#f78166"
+              stroke-width="1.5"
+            />
+            <text
+              x="485"
+              y="55"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Coding
+            </text>
+            <text
+              x="485"
+              y="72"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Round 2 (DSA)
+            </text>
+
+            <line
+              x1="540"
+              y1="58"
+              x2="570"
+              y2="58"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <rect
+              x="570"
+              y="30"
+              width="130"
+              height="56"
+              rx="8"
+              fill="#1c2330"
+              stroke="#79c0ff"
+              stroke-width="1.5"
+            />
+            <text
+              x="635"
+              y="55"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Technical F2F
+            </text>
+            <text
+              x="635"
+              y="72"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Final Human Round
+            </text>
+
+            <text
+              x="205"
+              y="105"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              AI does this
+            </text>
+            <text
+              x="345"
+              y="105"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              1000 → ~100
+            </text>
+            <text
+              x="485"
+              y="105"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              100 → ~10
+            </text>
+            <text
+              x="635"
+              y="105"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              10 → 2 selected
+            </text>
+
+            <defs>
+              <marker
+                id="arr"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L0,6 L8,3 z" fill="#30363d" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Aptitude Round</div>
+            <ul class="notes">
+              <li>60 questions / 60 minutes typically</li>
+              <li>
+                Topics:
+                <strong
+                  >Profit &amp; Loss, SI/CI, Permutation &amp; Combination,
+                  Family Relations, Number Series</strong
+                >
+              </li>
+              <li>1 minute per question — no time to re-check</li>
+              <li>Done by <strong>computer</strong> — no human evaluation</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Coding Round</div>
+            <ul class="notes">
+              <li>
+                Must know:
+                <strong
+                  >Arrays, Strings, DSA, Sorting, Binary Search, Bit
+                  Manipulation</strong
+                >
+              </li>
+              <li>Any package <strong>≥ ₹7 LPA</strong> needs DSA</li>
+              <li>Online editor — not pen &amp; paper</li>
+              <li>Test cases must pass, not just logic</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">⚡ Interview Reality</div>
+          Until the Technical F2F round, you are
+          <strong>just a row in an Excel sheet</strong> to the client. The first
+          time a human sees you is in Round 3.
+        </div>
+      </section>
+
+      <!-- 3. What to Get a Job -->
+      <section class="section" id="job-basics">
+        <div class="section-title">
+          <div class="icon icon-green">📋</div>
+          3 Basics Every Candidate Must Have
+        </div>
+
+        <div class="grid-2">
+          <div class="definition">
+            <div class="term">ATS-Friendly Resume</div>
+            <div class="meaning">
+              <strong>Application Tracking System</strong> — AI scans your
+              resume before any human does. If keywords don't match the job
+              description, you're auto-rejected before the first round.
+            </div>
+          </div>
+          <div class="definition">
+            <div class="term">LinkedIn Profile</div>
+            <div class="meaning">
+              Must be active — post regularly. Recruiters search and send
+              connection requests to active profiles. A dead profile = invisible
+              to recruiters.
+            </div>
+          </div>
+        </div>
+        <div class="definition">
+          <div class="term">Portfolio Website</div>
+          <div class="meaning">
+            A deployed website showcasing your projects and skill set. Will be
+            built using AI tools first, then rebuilt from scratch after learning
+            Full Stack.
+          </div>
+        </div>
+
+        <div class="highlight green">
+          🗓️ <strong>Next Week:</strong> All three — ATS Resume, LinkedIn, and
+          Portfolio Website — will be built in the first 3 days of regular
+          classes.
+        </div>
+      </section>
+
+      <!-- 4. Web Application -->
+      <section class="section" id="webapp">
+        <div class="section-title">
+          <div class="icon icon-blue">🌐</div>
+          What is a Web Application?
+        </div>
+
+        <div class="definition">
+          <div class="term">Web Development</div>
+          <div class="meaning">
+            The process of creating <strong>web applications</strong>.
+          </div>
+        </div>
+
+        <div class="definition">
+          <div class="term">Web Application</div>
+          <div class="meaning">
+            A <strong>software</strong> which can be
+            <strong>remotely accessed from anywhere in the world</strong> using
+            an active internet connection and a browser.
+          </div>
+        </div>
+
+        <details open>
+          <summary>
+            🔍 Real-world Example: How Amazon Opens on Your Laptop
+          </summary>
+          <div class="details-body">
+            <div class="diagram-wrap" style="margin-top: 14px">
+              <svg
+                width="680"
+                height="170"
+                viewBox="0 0 680 170"
+                xmlns="http://www.w3.org/2000/svg"
+                style="max-width: 100%"
+              >
+                <!-- Your Laptop (Client) -->
+                <rect
+                  x="10"
+                  y="40"
+                  width="140"
+                  height="90"
+                  rx="10"
+                  fill="#1c2330"
+                  stroke="#79c0ff"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="80"
+                  y="68"
+                  text-anchor="middle"
+                  fill="#79c0ff"
+                  font-family="Sora,sans-serif"
+                  font-size="12"
+                  font-weight="700"
+                >
+                  Your Laptop
+                </text>
+                <text
+                  x="80"
+                  y="86"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  Chrome Browser
+                </text>
+                <text
+                  x="80"
+                  y="103"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="10"
+                >
+                  www.amazon.in
+                </text>
+                <text
+                  x="80"
+                  y="120"
+                  text-anchor="middle"
+                  fill="#56d364"
+                  font-family="Sora,sans-serif"
+                  font-size="10"
+                >
+                  CLIENT
+                </text>
+
+                <!-- Arrow Right: Request -->
+                <line
+                  x1="152"
+                  y1="70"
+                  x2="248"
+                  y2="70"
+                  stroke="#f78166"
+                  stroke-width="1.5"
+                  stroke-dasharray="5,3"
+                  marker-end="url(#arr2)"
+                />
+                <text
+                  x="200"
+                  y="62"
+                  text-anchor="middle"
+                  fill="#f78166"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  REQUEST
+                </text>
+
+                <!-- Internet Cloud -->
+                <ellipse
+                  cx="305"
+                  cy="85"
+                  rx="55"
+                  ry="42"
+                  fill="#161b22"
+                  stroke="#30363d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="305"
+                  y="80"
+                  text-anchor="middle"
+                  fill="#e6edf3"
+                  font-family="Sora,sans-serif"
+                  font-size="13"
+                >
+                  🌐
+                </text>
+                <text
+                  x="305"
+                  y="98"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  Internet
+                </text>
+
+                <!-- Arrow Right: Response -->
+                <line
+                  x1="362"
+                  y1="70"
+                  x2="458"
+                  y2="70"
+                  stroke="#56d364"
+                  stroke-width="1.5"
+                  stroke-dasharray="5,3"
+                  marker-end="url(#arr3)"
+                />
+                <line
+                  x1="458"
+                  y1="100"
+                  x2="362"
+                  y2="100"
+                  stroke="#f78166"
+                  stroke-width="1.5"
+                  stroke-dasharray="5,3"
+                  marker-end="url(#arr4)"
+                />
+                <text
+                  x="410"
+                  y="62"
+                  text-anchor="middle"
+                  fill="#56d364"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  RESPONSE
+                </text>
+
+                <!-- Amazon Server -->
+                <rect
+                  x="460"
+                  y="40"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="#1c2330"
+                  stroke="#f78166"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="560"
+                  y="65"
+                  text-anchor="middle"
+                  fill="#f78166"
+                  font-family="Sora,sans-serif"
+                  font-size="12"
+                  font-weight="700"
+                >
+                  Amazon Server
+                </text>
+                <text
+                  x="560"
+                  y="82"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  📍 United States
+                </text>
+                <text
+                  x="560"
+                  y="99"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="10"
+                >
+                  Stores all data &amp; logic
+                </text>
+                <text
+                  x="560"
+                  y="116"
+                  text-anchor="middle"
+                  fill="#e3b341"
+                  font-family="Sora,sans-serif"
+                  font-size="10"
+                >
+                  SERVER
+                </text>
+
+                <text
+                  x="80"
+                  y="152"
+                  text-anchor="middle"
+                  fill="#8b949e"
+                  font-family="Sora,sans-serif"
+                  font-size="11"
+                >
+                  📍 Bangalore, India
+                </text>
+
+                <defs>
+                  <marker
+                    id="arr2"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path d="M0,0 L0,6 L8,3 z" fill="#f78166" />
+                  </marker>
+                  <marker
+                    id="arr3"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path d="M0,0 L0,6 L8,3 z" fill="#56d364" />
+                  </marker>
+                  <marker
+                    id="arr4"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path d="M0,0 L0,6 L8,3 z" fill="#f78166" />
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+            <ul class="notes">
+              <li>Your laptop = <strong>Client</strong> (sends request)</li>
+              <li>
+                Amazon's big computer = <strong>Server</strong> (processes &amp;
+                responds)
+              </li>
+              <li>
+                Amazon's website cannot fit inside your laptop — it lives on
+                their server
+              </li>
+              <li>
+                You need: <strong>Browser + Active Internet</strong> to access
+                any web app
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Definition</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Client</code></td>
+                <td>The device that <strong>sends the request</strong></td>
+                <td>Your laptop/phone</td>
+              </tr>
+              <tr>
+                <td><code>Server</code></td>
+                <td>
+                  Big computer that <strong>processes &amp; responds</strong>
+                </td>
+                <td>Amazon's data center</td>
+              </tr>
+              <tr>
+                <td><code>Remote Access</code></td>
+                <td>
+                  Accessing software present
+                  <strong>elsewhere in the world</strong> via internet
+                </td>
+                <td>Opening Amazon.in from India</td>
+              </tr>
+              <tr>
+                <td><code>Browser</code></td>
+                <td>Tool to access web apps</td>
+                <td>Chrome, Firefox, Safari, Edge</td>
+              </tr>
+              <tr>
+                <td><code>Web Developer</code></td>
+                <td>Person who builds web applications</td>
+                <td>You — after this course!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">🎯 Interview Answer</div>
+          <strong>Q: What is a web application?</strong><br />
+          A: A web application is a
+          <strong
+            >software that can be remotely accessed from anywhere in the
+            world</strong
+          >
+          with the help of an active internet connection and a browser.
+        </div>
+      </section>
+
+      <!-- 5. Client-Server Architecture -->
+      <section class="section" id="client-server">
+        <div class="section-title">
+          <div class="icon icon-yellow">🏗️</div>
+          Client-Server Architecture
+        </div>
+
+        <div class="highlight">
+          <strong>Client-Server Architecture:</strong> A model where the
+          <strong>client</strong> sends a request through the internet, the
+          <strong>server</strong> evaluates it and sends back a response. This
+          is how every web application works.
+        </div>
+
+        <div class="flow" style="justify-content: center; flex-wrap: nowrap">
+          <div class="flow-node blue">
+            Client<br />
+            <div class="label">Your Browser</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node yellow">
+            Internet<br />
+            <div class="label">Network</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node orange">
+            Server<br />
+            <div class="label">Web App Host</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node yellow">
+            Internet<br />
+            <div class="label">Network</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node green">
+            Response<br />
+            <div class="label">Website Loads</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Bangalore IT Ecosystem (Context)</div>
+          <ul class="notes">
+            <li>
+              <strong>68,000+</strong> registered IT companies in Bangalore
+            </li>
+            <li><strong>16,000+</strong> companies currently hiring</li>
+            <li>Bangalore = <strong>IT Hub</strong> of India</li>
+            <li>
+              Companies: Google, Microsoft, Meta, Amazon — all have tech parks
+              here
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. Full Stack Architecture -->
+      <section class="section" id="fullstack">
+        <div class="section-title">
+          <div class="icon icon-green">⚡</div>
+          Full Stack Web Development
+        </div>
+
+        <div class="definition">
+          <div class="term">Full Stack Developer</div>
+          <div class="meaning">
+            A developer who works on all three parts of a web application:
+            <strong>Front End + Back End + Database</strong>.
+          </div>
+        </div>
+
+        <div class="diagram-wrap">
+          <svg
+            width="640"
+            height="220"
+            viewBox="0 0 640 220"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Web Application Box -->
+            <rect
+              x="10"
+              y="10"
+              width="620"
+              height="200"
+              rx="12"
+              fill="none"
+              stroke="#30363d"
+              stroke-width="1.5"
+              stroke-dasharray="6,3"
+            />
+            <text
+              x="320"
+              y="32"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="600"
+            >
+              WEB APPLICATION
+            </text>
+
+            <!-- Frontend -->
+            <rect
+              x="30"
+              y="45"
+              width="175"
+              height="150"
+              rx="10"
+              fill="#1c2330"
+              stroke="#79c0ff"
+              stroke-width="1.5"
+            />
+            <text
+              x="117"
+              y="72"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora,sans-serif"
+              font-size="13"
+              font-weight="700"
+            >
+              FRONT END
+            </text>
+            <text
+              x="117"
+              y="92"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              What you SEE
+            </text>
+            <rect
+              x="47"
+              y="105"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="118"
+              y="120"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              HTML · CSS · JS
+            </text>
+            <rect
+              x="47"
+              y="133"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="118"
+              y="148"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              React
+            </text>
+            <text
+              x="117"
+              y="182"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              UI/UX Dev · Frontend Engineer
+            </text>
+
+            <!-- Backend -->
+            <rect
+              x="232"
+              y="45"
+              width="175"
+              height="150"
+              rx="10"
+              fill="#1c2330"
+              stroke="#f78166"
+              stroke-width="1.5"
+            />
+            <text
+              x="319"
+              y="72"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora,sans-serif"
+              font-size="13"
+              font-weight="700"
+            >
+              BACK END
+            </text>
+            <text
+              x="319"
+              y="92"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Business Logic
+            </text>
+            <rect
+              x="249"
+              y="105"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="320"
+              y="120"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              Java · Spring Boot
+            </text>
+            <rect
+              x="249"
+              y="133"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="320"
+              y="148"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              Hibernate · JDBC
+            </text>
+            <text
+              x="319"
+              y="182"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              SDE · Backend Engineer · SDE1
+            </text>
+
+            <!-- Database -->
+            <rect
+              x="434"
+              y="45"
+              width="175"
+              height="150"
+              rx="10"
+              fill="#1c2330"
+              stroke="#e3b341"
+              stroke-width="1.5"
+            />
+            <text
+              x="521"
+              y="72"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora,sans-serif"
+              font-size="13"
+              font-weight="700"
+            >
+              DATABASE
+            </text>
+            <text
+              x="521"
+              y="92"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Data Storage
+            </text>
+            <rect
+              x="451"
+              y="105"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="522"
+              y="120"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              MySQL
+            </text>
+            <rect
+              x="451"
+              y="133"
+              width="143"
+              height="22"
+              rx="5"
+              fill="#0d1117"
+            />
+            <text
+              x="522"
+              y="148"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="JetBrains Mono,monospace"
+              font-size="11"
+            >
+              MongoDB · PostgreSQL
+            </text>
+            <text
+              x="521"
+              y="182"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="10"
+            >
+              DB Admin · DB Engineer
+            </text>
+          </svg>
+        </div>
+
+        <!-- HTML, CSS, JS explained -->
+        <details open>
+          <summary>🧠 Front End Deep-Dive: HTML vs CSS vs JavaScript</summary>
+          <div class="details-body">
+            <div class="table-wrap" style="margin-top: 12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Technology</th>
+                    <th>Role</th>
+                    <th>Analogy</th>
+                    <th>Key Point</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>HTML</code></td>
+                    <td><strong>Structure</strong> of the page</td>
+                    <td>Skeleton of a human body</td>
+                    <td>
+                      Not a programming language — it's a
+                      <strong>Markup Language</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>CSS</code></td>
+                    <td><strong>Styling</strong> (colors, fonts, layout)</td>
+                    <td>Muscles, skin, clothes</td>
+                    <td>Remove CSS → page looks dead and unstyled</td>
+                  </tr>
+                  <tr>
+                    <td><code>JavaScript</code></td>
+                    <td>
+                      <strong>Interactivity</strong> &amp; dynamic behavior
+                    </td>
+                    <td>Makes the body dance/move</td>
+                    <td>
+                      Lives inside the browser; updates page
+                      <strong>without full reload</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>React</code></td>
+                    <td><strong>JS Library</strong> for reusable components</td>
+                    <td>Assembly line for body parts</td>
+                    <td>
+                      Most in-demand frontend library; used in
+                      <strong>99% of companies</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="highlight">
+              <strong>Add to Cart example:</strong> When you click "Add to Cart"
+              on Amazon, only the cart count updates — the entire page does NOT
+              reload. This is <strong>JavaScript</strong> at work — fetching
+              data from the server and updating just that part of the DOM.
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>☕ Why Java for Backend? (Not Python or Node.js)</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>
+                <strong>Highest number of job openings</strong> for freshers in
+                full stack is Java
+              </li>
+              <li>
+                Java + Spring Boot = most demanded combination, packages 8–15
+                LPA easily
+              </li>
+              <li>
+                Spring + React = one of the deadliest combos in today's market
+              </li>
+              <li>Python/Node.js are secondary — Java opens doors first</li>
+              <li>
+                Mastering Java = learning Python/Node later is easy (concepts
+                transfer)
+              </li>
+            </ul>
+            <div class="interview-tip" style="margin-top: 12px">
+              <div class="tip-label">💡 Mindset Shift</div>
+              Java looks harder (4 lines to print "Hello World" vs 1 in Python).
+              But mastering Java makes you
+              <strong>more employable, faster</strong>.
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 7. Course Curriculum -->
+      <section class="section" id="curriculum">
+        <div class="section-title">
+          <div class="icon icon-yellow">📚</div>
+          What You Will Learn (Course Curriculum)
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🎨 Front End</div>
+            <ul class="notes">
+              <li><strong>HTML</strong> — structure</li>
+              <li><strong>CSS</strong> — styling</li>
+              <li><strong>JavaScript</strong> — interactivity</li>
+              <li><strong>React</strong> — component library</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🗄️ Database</div>
+            <ul class="notes">
+              <li><strong>MySQL</strong> — primary (SQL)</li>
+              <li>MongoDB basics</li>
+              <li>Master MySQL → Oracle DB comes easy</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">☕ Back End (Java)</div>
+            <ul class="notes">
+              <li>
+                <strong>Core Java</strong> — fundamentals (interview gold)
+              </li>
+              <li><strong>Advanced Java</strong> — JDBC, JWT</li>
+              <li><strong>Hibernate</strong> — ORM</li>
+              <li><strong>Spring Core → Spring Boot</strong></li>
+              <li>Real-world projects</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🎁 Bonus Inclusions</div>
+            <ul class="notes">
+              <li>Python (Core) — pre-recorded from Day 1</li>
+              <li>DSA in Java &amp; Python</li>
+              <li>JavaScript (separate live sessions)</li>
+              <li>AI Tools &amp; Agentic Coding</li>
+              <li>Aptitude (quantitative + reasoning)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight green">
+          🏆 <strong>Placement Ready in 3 months:</strong> Core Java +
+          Programming (DSA) + MySQL → covers
+          <strong>60–70% of all fresher drives</strong>.
+        </div>
+      </section>
+
+      <!-- 8. Class Structure -->
+      <section class="section" id="structure">
+        <div class="section-title">
+          <div class="icon icon-orange">🕐</div>
+          Daily Class Structure
+        </div>
+
+        <div
+          class="flow"
+          style="flex-wrap: wrap; gap: 12px; justify-content: flex-start"
+        >
+          <div class="flow-node blue" style="min-width: 130px">
+            Core Java
+            <div class="label">Theory + Concepts</div>
+          </div>
+          <div class="flow-arrow">+</div>
+          <div class="flow-node orange" style="min-width: 130px">
+            Programming
+            <div class="label">DSA &amp; Problem Solving</div>
+          </div>
+          <div class="flow-arrow">+</div>
+          <div class="flow-node yellow" style="min-width: 130px">
+            SQL / Frontend
+            <div class="label">Rotating Topics</div>
+          </div>
+          <div class="flow-arrow">=</div>
+          <div class="flow-node green" style="min-width: 130px">
+            3 hrs/day
+            <div class="label">Mon – Fri</div>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-top: 16px">
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Activity</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mon–Fri</td>
+                <td><strong>Live Classes</strong> (3 hrs/day)</td>
+                <td>90 min Core Java + 90 min parallel sessions</td>
+              </tr>
+              <tr>
+                <td>Saturday</td>
+                <td><strong>Mock Interviews</strong></td>
+                <td>
+                  Taken by actual industry developers (Amazon, Autodesk,
+                  Accenture)
+                </td>
+              </tr>
+              <tr>
+                <td>Sunday</td>
+                <td>Self Practice</td>
+                <td>Portal assignments, recording revision</td>
+              </tr>
+              <tr>
+                <td>Every Day (after class)</td>
+                <td><strong>Doubt Clearing</strong> (15–20 min)</td>
+                <td>Trainer available; never leave with a doubt</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight orange">
+          📹 <strong>Every class is recorded</strong> — do NOT write notes
+          during class. Focus 100% on understanding. Revisit recordings as many
+          times as needed. Portal access is <strong>lifetime</strong>.
+        </div>
+      </section>
+
+      <!-- 9. TAP Academy Platform -->
+      <section class="section" id="platform">
+        <div class="section-title">
+          <div class="icon icon-blue">🤖</div>
+          TAP Academy — THAI Platform
+        </div>
+        <ul class="notes">
+          <li>THAI = <strong>TAP Academy's AI Platform</strong></li>
+          <li>
+            Includes: Company-wise questions, coding editor, MCQs, DSA problems
+          </li>
+          <li>
+            Features an <strong>AI Agent</strong> that watches your code at
+            every step (unlike LeetCode/HackerRank)
+          </li>
+          <li>
+            Pre-recorded videos for Java, Python, DSA, HTML/CSS, JavaScript,
+            Spring — available from <strong>Day 1</strong>
+          </li>
+          <li>Live class recordings uploaded same day</li>
+          <li>
+            <strong>Augmented Reality-based</strong> learning (animations +
+            visualization)
+          </li>
+          <li>Platform access is <strong>lifetime</strong></li>
+        </ul>
+      </section>
+
+      <!-- 10. Interview Tips -->
+      <section class="section" id="tips">
+        <div class="section-title">
+          <div class="icon icon-yellow">🎯</div>
+          Key Interview Answers (Day 1 Definitions)
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is web development?</div>
+          Web development is the process of creating
+          <strong>web applications</strong>.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is a web application?</div>
+          A web application is a
+          <strong
+            >software which can be remotely accessed from anywhere in the
+            world</strong
+          >
+          with the help of active internet connection and a browser.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is client-server architecture?</div>
+          The client sends a <strong>request</strong> via the internet to the
+          server. The server processes and sends back a
+          <strong>response</strong>. This is how all web applications
+          communicate.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is a full stack developer?</div>
+          A full stack developer works on all three layers —
+          <strong>front end</strong> (UI), <strong>back end</strong> (logic),
+          and <strong>database</strong> (data storage).
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is ATS?</div>
+          <strong>Application Tracking System</strong> — an AI that scans
+          resumes before humans see them. If your resume doesn't match keywords,
+          you're rejected before Round 1.
+        </div>
+      </section>
+
+      <!-- Summary -->
+      <section class="section" id="summary">
+        <div class="section-title">
+          <div class="icon icon-green">✅</div>
+          Day 1 Summary
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="emoji">🌐</div>
+            <div class="s-title">Web App</div>
+            <div class="s-sub">
+              Software accessible remotely via internet + browser
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🖥️</div>
+            <div class="s-title">Client-Server</div>
+            <div class="s-sub">
+              Client requests → Internet → Server responds
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🎨</div>
+            <div class="s-title">Front End</div>
+            <div class="s-sub">
+              HTML (structure) + CSS (style) + JS (logic) + React
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">☕</div>
+            <div class="s-title">Back End</div>
+            <div class="s-sub">Java + Hibernate + Spring Boot</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🗄️</div>
+            <div class="s-title">Database</div>
+            <div class="s-sub">MySQL (primary), MongoDB</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">⚡</div>
+            <div class="s-title">Full Stack</div>
+            <div class="s-sub">FE + BE + DB = highest-paying role</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">📋</div>
+            <div class="s-title">Job Basics</div>
+            <div class="s-sub">ATS Resume + LinkedIn + Portfolio Website</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🎯</div>
+            <div class="s-title">3-Month Goal</div>
+            <div class="s-sub">Core Java + DSA + MySQL = placement ready</div>
+          </div>
+        </div>
+
+        <div class="highlight" style="margin-top: 24px">
+          💬 <strong>Remember:</strong> Never leave the classroom with a doubt.
+          Use the portal daily. Post on LinkedIn. Consistency is everything.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

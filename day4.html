@@ -1,0 +1,2546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 4</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 16px 60px;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      pre {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--accent2);
+        overflow-x: auto;
+        margin-bottom: 16px;
+        line-height: 1.8;
+      }
+      pre .kw {
+        color: var(--accent);
+      }
+      pre .type {
+        color: var(--accent4);
+      }
+      pre .cm {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Collapsible */
+      details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      summary {
+        padding: 14px 18px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        user-select: none;
+        list-style: none;
+        transition: background 0.2s;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::before {
+        content: "▶";
+        font-size: 10px;
+        color: var(--accent);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      details[open] summary::before {
+        transform: rotate(90deg);
+      }
+      summary:hover {
+        background: var(--surface2);
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        border-top: 1px solid var(--border);
+        margin-top: -1px;
+      }
+      .details-body ul.notes {
+        margin-top: 12px;
+      }
+
+      /* Diagram / Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0;
+        margin: 16px 0;
+      }
+      .flow-node {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 100px;
+      }
+      .flow-node .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .flow-arrow {
+        color: var(--muted);
+        font-size: 18px;
+        padding: 0 8px;
+        flex-shrink: 0;
+      }
+      .flow-node.blue {
+        border-color: rgba(121, 192, 255, 0.4);
+        color: var(--accent2);
+      }
+      .flow-node.orange {
+        border-color: rgba(247, 129, 102, 0.4);
+        color: var(--accent);
+      }
+      .flow-node.green {
+        border-color: rgba(86, 211, 100, 0.4);
+        color: var(--accent3);
+      }
+      .flow-node.yellow {
+        border-color: rgba(227, 179, 65, 0.4);
+        color: var(--accent4);
+      }
+
+      /* SVG Diagrams */
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      .diagram-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Summary box */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .summary-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        text-align: center;
+      }
+      .summary-card .emoji {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .summary-card .s-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .summary-card .s-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* Badge pill */
+      .pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .pill-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .pill-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .pill-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+
+      /* Interview tips */
+      .interview-tip {
+        background: rgba(227, 179, 65, 0.07);
+        border: 1px solid rgba(227, 179, 65, 0.25);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .interview-tip .tip-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent4);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      /* OOP specific: object-card with two columns */
+      .obj-parts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .obj-part {
+        background: var(--surface2);
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .obj-part-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .obj-part.state .obj-part-title {
+        color: var(--accent2);
+        border-bottom: 1px solid rgba(121, 192, 255, 0.2);
+        padding-bottom: 8px;
+      }
+      .obj-part.behavior .obj-part-title {
+        color: var(--accent3);
+        border-bottom: 1px solid rgba(86, 211, 100, 0.2);
+        padding-bottom: 8px;
+      }
+      .obj-part ul.notes li::before {
+        color: var(--accent2);
+      }
+      .obj-part.behavior ul.notes li::before {
+        color: var(--accent3);
+      }
+
+      @media (max-width: 700px) {
+        .obj-parts {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html" class="active">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 4</div>
+        <h1>Object-Oriented <span>Programming (OOP)</span> in Java</h1>
+        <p class="subtitle">
+          Understanding OOP fundamentals — Objects, Classes, State, Behavior,
+          and the 3 core rules of Object Orientation.
+        </p>
+        <div class="tags">
+          <span class="tag">OOP</span>
+          <span class="tag">Object</span>
+          <span class="tag">Class</span>
+          <span class="tag">State</span>
+          <span class="tag">Behavior</span>
+          <span class="tag">WORA</span>
+          <span class="tag">JVM</span>
+          <span class="tag">Blueprint</span>
+        </div>
+      </div>
+
+      <!-- 1. Quick Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-orange">🔁</div>
+          Quick Revision (Day 1–3)
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📅 Day-wise Recap</div>
+            <ul class="notes">
+              <li><strong>Day 1</strong> → Course Introduction</li>
+              <li>
+                <strong>Day 2</strong> → Evolution of Computers + Programming
+                Languages
+              </li>
+              <li>
+                <strong>Day 3</strong> → Java Introduction + Platform
+                Independence
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🔑 Key Terms from Day 3</div>
+            <ul class="notes">
+              <li><strong>Java</strong> = Platform Independent</li>
+              <li><strong>JVM</strong> = Platform Dependent</li>
+              <li><strong>WORA</strong> → Write Once Run Anywhere</li>
+              <li><strong>Portable</strong> &amp; Architecture Neutral</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Java Execution Flow -->
+        <div class="diagram-wrap">
+          <svg
+            width="680"
+            height="100"
+            viewBox="0 0 680 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- High-level code -->
+            <rect
+              x="10"
+              y="20"
+              width="140"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="#79c0ff"
+              stroke-width="1.5"
+            />
+            <text
+              x="80"
+              y="47"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono"
+              font-size="12"
+              font-weight="700"
+            >
+              High-Level
+            </text>
+            <text
+              x="80"
+              y="65"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="JetBrains Mono"
+              font-size="11"
+            >
+              Java Source (.java)
+            </text>
+
+            <!-- Arrow -->
+            <line
+              x1="150"
+              y1="50"
+              x2="195"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <polygon points="195,44 208,50 195,56" fill="#30363d" />
+            <text
+              x="179"
+              y="44"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              javac
+            </text>
+
+            <!-- Bytecode -->
+            <rect
+              x="210"
+              y="20"
+              width="140"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="#e3b341"
+              stroke-width="1.5"
+            />
+            <text
+              x="280"
+              y="47"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="JetBrains Mono"
+              font-size="12"
+              font-weight="700"
+            >
+              Bytecode
+            </text>
+            <text
+              x="280"
+              y="65"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="JetBrains Mono"
+              font-size="11"
+            >
+              Compiled (.class)
+            </text>
+
+            <!-- Arrow -->
+            <line
+              x1="350"
+              y1="50"
+              x2="395"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <polygon points="395,44 408,50 395,56" fill="#30363d" />
+            <text
+              x="379"
+              y="44"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              JVM
+            </text>
+
+            <!-- Machine Code -->
+            <rect
+              x="410"
+              y="20"
+              width="140"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="#56d364"
+              stroke-width="1.5"
+            />
+            <text
+              x="480"
+              y="47"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="JetBrains Mono"
+              font-size="12"
+              font-weight="700"
+            >
+              Machine Code
+            </text>
+            <text
+              x="480"
+              y="65"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="JetBrains Mono"
+              font-size="11"
+            >
+              OS-specific
+            </text>
+
+            <!-- WORA label -->
+            <rect
+              x="565"
+              y="20"
+              width="110"
+              height="60"
+              rx="8"
+              fill="rgba(247,129,102,0.08)"
+              stroke="rgba(247,129,102,0.35)"
+              stroke-width="1.5"
+              stroke-dasharray="4"
+            />
+            <text
+              x="620"
+              y="47"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="JetBrains Mono"
+              font-size="11"
+              font-weight="700"
+            >
+              WORA
+            </text>
+            <text
+              x="620"
+              y="62"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Any Platform
+            </text>
+          </svg>
+        </div>
+
+        <div class="highlight">
+          💡 <strong>Key Insight:</strong> Java source code compiles to
+          <strong>Bytecode</strong> once. JVM (which is platform-dependent) then
+          converts Bytecode to machine code for <em>any</em> OS — making Java
+          <strong>platform independent</strong>.
+        </div>
+      </section>
+
+      <!-- 2. Today's Topic -->
+      <section class="section" id="topic">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Today's Topic: Object-Oriented Programming
+        </div>
+
+        <div class="highlight green">
+          👉 <strong>Java is an Object-Oriented Programming Language</strong>
+        </div>
+
+        <div class="definition">
+          <div class="term">Orientation</div>
+          <div class="meaning">
+            = Way of looking / Perspective<br />Different people view the
+            <em>same thing</em> differently based on their orientation.
+          </div>
+        </div>
+
+        <!-- Perspective diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="700"
+            height="180"
+            viewBox="0 0 700 180"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Center: Glass of water -->
+            <circle
+              cx="350"
+              cy="90"
+              r="40"
+              fill="#1c2330"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <text
+              x="350"
+              y="86"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora"
+              font-size="13"
+              font-weight="700"
+            >
+              Glass of
+            </text>
+            <text
+              x="350"
+              y="104"
+              text-anchor="middle"
+              fill="#e6edf3"
+              font-family="Sora"
+              font-size="13"
+              font-weight="700"
+            >
+              Water 💧
+            </text>
+
+            <!-- Optimist -->
+            <rect
+              x="10"
+              y="10"
+              width="120"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="70"
+              y="31"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="11"
+              font-weight="700"
+            >
+              😊 Optimist
+            </text>
+            <text
+              x="70"
+              y="50"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              Half Full
+            </text>
+            <line
+              x1="130"
+              y1="35"
+              x2="310"
+              y2="80"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <!-- Pessimist -->
+            <rect
+              x="10"
+              y="120"
+              width="120"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="70"
+              y="141"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora"
+              font-size="11"
+              font-weight="700"
+            >
+              😔 Pessimist
+            </text>
+            <text
+              x="70"
+              y="160"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              Half Empty
+            </text>
+            <line
+              x1="130"
+              y1="145"
+              x2="310"
+              y2="100"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <!-- Scientist -->
+            <rect
+              x="570"
+              y="10"
+              width="120"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="630"
+              y="31"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora"
+              font-size="11"
+              font-weight="700"
+            >
+              🔬 Scientist
+            </text>
+            <text
+              x="630"
+              y="50"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              H₂O
+            </text>
+            <line
+              x1="570"
+              y1="35"
+              x2="390"
+              y2="80"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <!-- Realist -->
+            <rect
+              x="570"
+              y="120"
+              width="120"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="630"
+              y="141"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora"
+              font-size="11"
+              font-weight="700"
+            >
+              🧘 Realist
+            </text>
+            <text
+              x="630"
+              y="160"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              Just Water
+            </text>
+            <line
+              x1="570"
+              y1="145"
+              x2="390"
+              y2="100"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+          </svg>
+        </div>
+
+        <div class="highlight yellow">
+          👉 <strong>Object doesn't change</strong> — only the
+          <strong>perspective</strong> changes.<br />
+          In Java, the perspective is: <strong>everything is an Object!</strong>
+        </div>
+      </section>
+
+      <!-- 3. What is Object-Oriented -->
+      <section class="section" id="oop">
+        <div class="section-title">
+          <div class="icon icon-green">📦</div>
+          What is Object-Oriented?
+        </div>
+
+        <div class="definition">
+          <div class="term">Object-Oriented</div>
+          <div class="meaning">
+            = Way of looking at <strong>everything</strong> in the world as an
+            <strong>Object</strong>.
+          </div>
+        </div>
+
+        <div class="highlight green">
+          📌 <strong>Definition:</strong> Object Orientation means viewing
+          everything in the world as objects.
+        </div>
+      </section>
+
+      <!-- 4. Rule 1 -->
+      <section class="section" id="rule1">
+        <div class="section-title">
+          <div class="icon icon-blue">🌍</div>
+          Rule 1 — World is a Collection of Objects
+        </div>
+
+        <div class="highlight">
+          👉 <strong>Everything</strong> in the universe is an object!
+        </div>
+
+        <!-- Object grid diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="680"
+            height="200"
+            viewBox="0 0 680 200"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Title -->
+            <text
+              x="340"
+              y="22"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="12"
+            >
+              Everything = Object
+            </text>
+
+            <!-- Row 1 -->
+            <rect
+              x="20"
+              y="35"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="70" y="57" text-anchor="middle" font-size="18">📱</text>
+            <text
+              x="70"
+              y="76"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Phone
+            </text>
+
+            <rect
+              x="140"
+              y="35"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="190" y="57" text-anchor="middle" font-size="18">💻</text>
+            <text
+              x="190"
+              y="76"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Laptop
+            </text>
+
+            <rect
+              x="260"
+              y="35"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="310" y="57" text-anchor="middle" font-size="18">🚗</text>
+            <text
+              x="310"
+              y="76"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Car
+            </text>
+
+            <rect
+              x="380"
+              y="35"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="430" y="57" text-anchor="middle" font-size="18">👤</text>
+            <text
+              x="430"
+              y="76"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Human
+            </text>
+
+            <rect
+              x="500"
+              y="35"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="550" y="57" text-anchor="middle" font-size="18">🏙️</text>
+            <text
+              x="550"
+              y="76"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              City
+            </text>
+
+            <!-- Row 2 -->
+            <rect
+              x="80"
+              y="115"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="130" y="137" text-anchor="middle" font-size="18">🌍</text>
+            <text
+              x="130"
+              y="156"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Earth
+            </text>
+
+            <rect
+              x="210"
+              y="115"
+              width="100"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.35)"
+              stroke-width="1.5"
+            />
+            <text x="260" y="137" text-anchor="middle" font-size="18">🌌</text>
+            <text
+              x="260"
+              y="156"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora"
+              font-size="12"
+              font-weight="600"
+            >
+              Galaxy
+            </text>
+
+            <rect
+              x="340"
+              y="115"
+              width="120"
+              height="50"
+              rx="8"
+              fill="rgba(121,192,255,0.06)"
+              stroke="rgba(121,192,255,0.5)"
+              stroke-width="2"
+              stroke-dasharray="5"
+            />
+            <text
+              x="400"
+              y="137"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora"
+              font-size="12"
+              font-weight="700"
+            >
+              Everything
+            </text>
+            <text
+              x="400"
+              y="156"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              = Object
+            </text>
+
+            <text
+              x="340"
+              y="192"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              📌 Conclusion: Everything in the universe is an object
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 5. Rule 2 -->
+      <section class="section" id="rule2">
+        <div class="section-title">
+          <div class="icon icon-orange">🧩</div>
+          Rule 2 — Every Object Belongs to a Class
+        </div>
+
+        <div class="definition">
+          <div class="term">Class</div>
+          <div class="meaning">
+            = Type / Category of objects<br /><span
+              style="color: var(--accent4)"
+              >"Type" (non-technical) = Class (technical term)</span
+            >
+          </div>
+        </div>
+
+        <details open>
+          <summary>💡 Objects → Class Examples</summary>
+          <div class="details-body">
+            <div class="table-wrap" style="margin-top: 12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Objects</th>
+                    <th>Class (Category)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Mobile, Laptop, Desktop</td>
+                    <td><strong>Computer</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Hatchback, Sports Car, EV</td>
+                    <td><strong>Car</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Corona, Ebola, Cold</td>
+                    <td><strong>Virus</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <!-- Real vs Imaginary -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">⚠️ Important Concept</div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Concept</th>
+                    <th>Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Object</strong></td>
+                    <td>Real</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Class</strong></td>
+                    <td>Imaginary</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ul class="notes" style="margin-top: 8px">
+              <li><strong>Real</strong> → i20 car 🚗 (exists physically)</li>
+              <li>
+                <strong>Imaginary</strong> → "Car" concept (template in mind)
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🏠 Real-Life Analogy</div>
+            <ul class="notes">
+              <li><strong>Class</strong> = Blueprint 🧾 (imaginary)</li>
+              <li><strong>Object</strong> = Real House 🏠 (physical)</li>
+              <li>
+                Blueprint comes <strong>first</strong> → then house is built
+              </li>
+            </ul>
+            <div
+              class="highlight green"
+              style="margin-top: 12px; margin-bottom: 0"
+            >
+              📌 Class is created first → Then object is created
+            </div>
+          </div>
+        </div>
+
+        <!-- Blueprint → Object diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="580"
+            height="110"
+            viewBox="0 0 580 110"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Blueprint box -->
+            <rect
+              x="20"
+              y="25"
+              width="180"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.5)"
+              stroke-width="1.5"
+              stroke-dasharray="6"
+            />
+            <text
+              x="110"
+              y="52"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora"
+              font-size="13"
+              font-weight="700"
+            >
+              📋 Class
+            </text>
+            <text
+              x="110"
+              y="72"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              Blueprint (Imaginary)
+            </text>
+
+            <!-- Arrow -->
+            <line
+              x1="200"
+              y1="55"
+              x2="250"
+              y2="55"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <polygon points="250,49 263,55 250,61" fill="#30363d" />
+            <text
+              x="231"
+              y="48"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              creates
+            </text>
+
+            <!-- Object box -->
+            <rect
+              x="265"
+              y="25"
+              width="180"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="355"
+              y="52"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="13"
+              font-weight="700"
+            >
+              🏠 Object
+            </text>
+            <text
+              x="355"
+              y="72"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              Real Instance
+            </text>
+
+            <!-- Multiple objects hint -->
+            <rect
+              x="460"
+              y="25"
+              width="50"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.3)"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+            <text
+              x="485"
+              y="52"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="20"
+            >
+              🏡
+            </text>
+            <text
+              x="485"
+              y="72"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              obj2
+            </text>
+
+            <text
+              x="300"
+              y="102"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              One class can create many objects
+            </text>
+          </svg>
+        </div>
+
+        <div class="highlight yellow">
+          🧠 <strong>Rule 2 Summary:</strong> Every object belongs to a class.
+          Class is imaginary. Object is real.
+        </div>
+      </section>
+
+      <!-- 6. Rule 3 -->
+      <section class="section" id="rule3">
+        <div class="section-title">
+          <div class="icon icon-green">⚙️</div>
+          Rule 3 — Every Object Has Two Parts
+        </div>
+
+        <div class="highlight">
+          👉 Every object consists of:<br />
+          <strong>1️⃣ State (Properties)</strong> → "HAS"<br />
+          <strong>2️⃣ Behavior</strong> → "DOES"
+        </div>
+
+        <!-- State + Behavior for Car -->
+        <div class="card" style="margin-bottom: 16px">
+          <div class="card-title">🚗 Example: Car Object</div>
+          <div class="obj-parts">
+            <div class="obj-part state">
+              <div class="obj-part-title">🔹 State (HAS)</div>
+              <ul class="notes">
+                <li>Name</li>
+                <li>Cost</li>
+                <li>Mileage</li>
+                <li>Color</li>
+                <li>Seats</li>
+              </ul>
+            </div>
+            <div class="obj-part behavior">
+              <div class="obj-part-title">🔸 Behavior (DOES)</div>
+              <ul class="notes">
+                <li>Start</li>
+                <li>Stop</li>
+                <li>Accelerate</li>
+                <li>Change gear</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- State & Behavior → Coding mapping -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Object Concept</th>
+                <th>In Java Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>State (HAS)</strong></td>
+                <td>
+                  Data Types (<code>String</code>, <code>int</code>,
+                  <code>float</code>...)
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Behavior (DOES)</strong></td>
+                <td>Methods / Functions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- State → Behavior flow diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="620"
+            height="120"
+            viewBox="0 0 620 120"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Object box -->
+            <rect
+              x="10"
+              y="30"
+              width="110"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="65"
+              y="57"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="13"
+              font-weight="700"
+            >
+              Object
+            </text>
+            <text
+              x="65"
+              y="77"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="11"
+            >
+              = State + Behavior
+            </text>
+
+            <!-- Arrow -->
+            <line
+              x1="120"
+              y1="60"
+              x2="160"
+              y2="60"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <polygon points="160,54 173,60 160,66" fill="#30363d" />
+
+            <!-- State -->
+            <rect
+              x="175"
+              y="10"
+              width="130"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="240"
+              y="32"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora"
+              font-size="12"
+              font-weight="700"
+            >
+              State (HAS)
+            </text>
+            <text
+              x="240"
+              y="50"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              Data Types
+            </text>
+
+            <!-- Behavior -->
+            <rect
+              x="175"
+              y="80"
+              width="130"
+              height="30"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+              stroke-width="1.5"
+            />
+            <text
+              x="240"
+              y="92"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="12"
+              font-weight="700"
+            >
+              Behavior
+            </text>
+            <text
+              x="240"
+              y="104"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              (DOES)
+            </text>
+
+            <!-- Arrow 2 -->
+            <line
+              x1="305"
+              y1="60"
+              x2="345"
+              y2="60"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <polygon points="345,54 358,60 345,66" fill="#30363d" />
+
+            <!-- Code box -->
+            <rect
+              x="360"
+              y="10"
+              width="250"
+              height="100"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.35)"
+              stroke-width="1.5"
+            />
+            <text
+              x="485"
+              y="32"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="JetBrains Mono"
+              font-size="11"
+              font-weight="700"
+            >
+              Java Code (Car)
+            </text>
+            <text
+              x="380"
+              y="52"
+              fill="#e3b341"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              String name;
+            </text>
+            <text
+              x="380"
+              y="68"
+              fill="#e3b341"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              double cost;
+            </text>
+            <text
+              x="380"
+              y="84"
+              fill="#e3b341"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              float mileage;
+            </text>
+            <text
+              x="380"
+              y="100"
+              fill="#56d364"
+              font-family="JetBrains Mono"
+              font-size="10"
+            >
+              void start() { ... }
+            </text>
+          </svg>
+        </div>
+
+        <div class="highlight green">
+          🧠 <strong>Rule 3 Summary:</strong><br />
+          Every object <strong>HAS</strong> state (properties) → coded using
+          <strong>data types</strong><br />
+          Every object <strong>DOES</strong> behavior → coded using
+          <strong>methods</strong>
+        </div>
+      </section>
+
+      <!-- 7. All 3 Rules Together -->
+      <section class="section" id="rules">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧱</div>
+          Putting All 3 Rules Together
+        </div>
+
+        <div
+          class="flow"
+          style="flex-wrap: wrap; gap: 12px; justify-content: flex-start"
+        >
+          <div class="flow-node green" style="min-width: 160px">
+            ✅ Rule 1
+            <div class="label">World = Collection of Objects</div>
+          </div>
+          <div class="flow-arrow">+</div>
+          <div class="flow-node blue" style="min-width: 160px">
+            ✅ Rule 2
+            <div class="label">Every Object → belongs to a Class</div>
+          </div>
+          <div class="flow-arrow">+</div>
+          <div class="flow-node orange" style="min-width: 160px">
+            ✅ Rule 3
+            <div class="label">Object = State + Behavior</div>
+          </div>
+          <div class="flow-arrow">=</div>
+          <div class="flow-node yellow" style="min-width: 140px">
+            ☕ OOP
+            <div class="label">Java Paradigm</div>
+          </div>
+        </div>
+
+        <!-- Full OOP diagram -->
+        <div class="diagram-wrap" style="margin-top: 20px">
+          <svg
+            width="680"
+            height="230"
+            viewBox="0 0 680 230"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Universe -->
+            <rect
+              x="10"
+              y="10"
+              width="660"
+              height="210"
+              rx="12"
+              fill="none"
+              stroke="rgba(86,211,100,0.25)"
+              stroke-width="1.5"
+              stroke-dasharray="6"
+            />
+            <text
+              x="340"
+              y="30"
+              text-anchor="middle"
+              fill="rgba(86,211,100,0.6)"
+              font-family="Sora"
+              font-size="12"
+            >
+              🌍 World = Collection of Objects
+            </text>
+
+            <!-- Class 1: Computer -->
+            <rect
+              x="30"
+              y="45"
+              width="190"
+              height="165"
+              rx="10"
+              fill="rgba(121,192,255,0.05)"
+              stroke="rgba(121,192,255,0.3)"
+              stroke-width="1"
+            />
+            <text
+              x="125"
+              y="65"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono"
+              font-size="11"
+              font-weight="700"
+            >
+              Class: Computer
+            </text>
+            <rect
+              x="45"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+              stroke-width="1"
+            />
+            <text x="80" y="92" text-anchor="middle" font-size="14">📱</text>
+            <text
+              x="80"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Mobile
+            </text>
+            <rect
+              x="130"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+              stroke-width="1"
+            />
+            <text x="165" y="92" text-anchor="middle" font-size="14">💻</text>
+            <text
+              x="165"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Laptop
+            </text>
+            <rect
+              x="45"
+              y="130"
+              width="155"
+              height="35"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="122"
+              y="144"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              State: brand, RAM, price
+            </text>
+            <text
+              x="122"
+              y="157"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              Behavior: boot(), shutdown()
+            </text>
+            <rect
+              x="45"
+              y="175"
+              width="155"
+              height="25"
+              rx="6"
+              fill="rgba(86,211,100,0.07)"
+              stroke="rgba(86,211,100,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="122"
+              y="191"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="10"
+            >
+              Object = Real
+            </text>
+
+            <!-- Class 2: Car -->
+            <rect
+              x="245"
+              y="45"
+              width="190"
+              height="165"
+              rx="10"
+              fill="rgba(247,129,102,0.05)"
+              stroke="rgba(247,129,102,0.3)"
+              stroke-width="1"
+            />
+            <text
+              x="340"
+              y="65"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="JetBrains Mono"
+              font-size="11"
+              font-weight="700"
+            >
+              Class: Car
+            </text>
+            <rect
+              x="260"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+              stroke-width="1"
+            />
+            <text x="295" y="92" text-anchor="middle" font-size="14">🚗</text>
+            <text
+              x="295"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              i20
+            </text>
+            <rect
+              x="345"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+              stroke-width="1"
+            />
+            <text x="380" y="92" text-anchor="middle" font-size="14">🏎️</text>
+            <text
+              x="380"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Sports EV
+            </text>
+            <rect
+              x="260"
+              y="130"
+              width="155"
+              height="35"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="337"
+              y="144"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              State: name, cost, mileage
+            </text>
+            <text
+              x="337"
+              y="157"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              Behavior: start(), stop()
+            </text>
+            <rect
+              x="260"
+              y="175"
+              width="155"
+              height="25"
+              rx="6"
+              fill="rgba(86,211,100,0.07)"
+              stroke="rgba(86,211,100,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="337"
+              y="191"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="10"
+            >
+              Object = Real
+            </text>
+
+            <!-- Class 3: Human -->
+            <rect
+              x="460"
+              y="45"
+              width="190"
+              height="165"
+              rx="10"
+              fill="rgba(227,179,65,0.05)"
+              stroke="rgba(227,179,65,0.3)"
+              stroke-width="1"
+            />
+            <text
+              x="555"
+              y="65"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="JetBrains Mono"
+              font-size="11"
+              font-weight="700"
+            >
+              Class: Human
+            </text>
+            <rect
+              x="475"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.4)"
+              stroke-width="1"
+            />
+            <text x="510" y="92" text-anchor="middle" font-size="14">👤</text>
+            <text
+              x="510"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Person A
+            </text>
+            <rect
+              x="560"
+              y="75"
+              width="70"
+              height="40"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.4)"
+              stroke-width="1"
+            />
+            <text x="595" y="92" text-anchor="middle" font-size="14">👩</text>
+            <text
+              x="595"
+              y="108"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora"
+              font-size="10"
+            >
+              Person B
+            </text>
+            <rect
+              x="475"
+              y="130"
+              width="155"
+              height="35"
+              rx="6"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="552"
+              y="144"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              State: name, age, height
+            </text>
+            <text
+              x="552"
+              y="157"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="JetBrains Mono"
+              font-size="9"
+            >
+              Behavior: walk(), speak()
+            </text>
+            <rect
+              x="475"
+              y="175"
+              width="155"
+              height="25"
+              rx="6"
+              fill="rgba(86,211,100,0.07)"
+              stroke="rgba(86,211,100,0.25)"
+              stroke-width="1"
+            />
+            <text
+              x="552"
+              y="191"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora"
+              font-size="10"
+            >
+              Object = Real
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 8. Basic Java Class Structure -->
+      <section class="section" id="javaclass">
+        <div class="section-title">
+          <div class="icon icon-blue">💻</div>
+          Basic Java Class Structure
+        </div>
+
+        <div class="highlight orange">
+          👉 In Java: <strong>Everything must be written inside a class</strong>
+        </div>
+
+        <pre><span class="kw">class</span> Car {
+    <span class="cm">// State (Properties) — Data Types</span>
+    <span class="type">String</span> name;
+    <span class="type">double</span> cost;
+    <span class="type">float</span>  mileage;
+
+    <span class="cm">// Behavior — Methods</span>
+    <span class="kw">void</span> start()  { <span class="cm">/* ... */</span> }
+    <span class="kw">void</span> stop()   { <span class="cm">/* ... */</span> }
+}</pre>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">📌 Syntax Notes</div>
+            <ul class="notes">
+              <li><code>class</code> → keyword</li>
+              <li><code>{ }</code> → block (wraps the class body)</li>
+              <li><code>;</code> → statement end (like a full stop)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">✍️ Why Semicolon (;)?</div>
+            <ul class="notes">
+              <li>English → uses <strong>punctuation</strong> (. ? !)</li>
+              <li>Java → uses <strong>;</strong> to end statements</li>
+              <li>
+                It is part of <strong>Java syntax</strong> (grammar rules)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Key Takeaways -->
+      <section class="section" id="takeaways">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Key Takeaways
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">☕ Java &amp; OOP</div>
+            <ul class="notes">
+              <li>Java is <strong>Object-Oriented</strong></li>
+              <li>Orientation = Perspective</li>
+              <li>Everything = <strong>Object</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">📦 Class vs Object</div>
+            <ul class="notes">
+              <li>Object belongs to <strong>Class</strong></li>
+              <li>Class = Blueprint (imaginary)</li>
+              <li>Object = Real instance</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">⚙️ Object Structure</div>
+            <ul class="notes">
+              <li>Object = <strong>State + Behavior</strong></li>
+              <li>State → Data types</li>
+              <li>Behavior → Methods</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 Java Syntax</div>
+            <ul class="notes">
+              <li><strong>Everything</strong> inside a class</li>
+              <li><code>class</code> keyword + <code>{ }</code> block</li>
+              <li><code>;</code> ends every statement</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-yellow">📢</div>
+          Important Interview Questions
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q1: What is Object-Oriented Programming?</div>
+          OOP is a programming paradigm that views everything as
+          <strong>objects</strong>, where each object has state (properties) and
+          behavior (methods), and belongs to a class.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q2: What is an object?</div>
+          An object is a <strong>real, tangible instance</strong> of a class. It
+          has state (data) and behavior (functions). Example: a specific car
+          like "i20" is an object.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q3: What is a class?</div>
+          A class is a <strong>blueprint / template</strong> (imaginary) that
+          defines the structure and behavior for objects. Example: "Car" is a
+          class.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q4: Difference between class and object?</div>
+          A <strong>class</strong> is imaginary (blueprint), an
+          <strong>object</strong> is real (instance). Class is created first,
+          then objects are created from it.
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q5: What are state and behavior?</div>
+          <strong>State</strong> = properties an object HAS (coded as data
+          types). <strong>Behavior</strong> = actions an object DOES (coded as
+          methods/functions).
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q6: Real-world example of OOP?</div>
+          A <strong>Car</strong>: Class = "Car" (blueprint). Object = "i20".
+          State = name, cost, mileage. Behavior = start(), stop(), accelerate().
+        </div>
+        <div class="interview-tip">
+          <div class="tip-label">Q7: Why is Java object-oriented?</div>
+          Because in Java,
+          <strong>everything must be written inside a class</strong>. Every
+          program models the world as objects with state and behavior.
+        </div>
+      </section>
+
+      <!-- 11. Final Understanding -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-orange">🧠</div>
+          Final Simple Understanding (Very Important!)
+        </div>
+
+        <div class="highlight orange">
+          👉 Think like a Java developer:
+          <strong
+            >Phone → Object · Car → Object · Human → Object · Everything →
+            Object</strong
+          >
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🧠 Developer's Mental Model</div>
+            <ul class="notes">
+              <li>📱 Phone → <strong>Object</strong></li>
+              <li>🚗 Car → <strong>Object</strong></li>
+              <li>👤 Human → <strong>Object</strong></li>
+              <li>🌍 Everything → <strong>Object</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🧩 Grouping Objects</div>
+            <ul class="notes">
+              <li>Group of similar objects → <strong>Class</strong></li>
+              <li>Object <strong>HAS</strong> → Properties (State)</li>
+              <li>Object <strong>DOES</strong> → Behavior</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Summary grid -->
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="emoji">📦</div>
+            <div class="s-title">OOP</div>
+            <div class="s-sub">View everything as objects</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🌍</div>
+            <div class="s-title">Rule 1</div>
+            <div class="s-sub">World = Collection of Objects</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🧾</div>
+            <div class="s-title">Rule 2</div>
+            <div class="s-sub">Every Object → belongs to a Class</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">⚙️</div>
+            <div class="s-title">Rule 3</div>
+            <div class="s-sub">Object = State + Behavior</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🧾</div>
+            <div class="s-title">Class</div>
+            <div class="s-sub">Blueprint — Imaginary</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🏠</div>
+            <div class="s-title">Object</div>
+            <div class="s-sub">Real instance of a class</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔵</div>
+            <div class="s-title">State</div>
+            <div class="s-sub">Data types (HAS)</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🟢</div>
+            <div class="s-title">Behavior</div>
+            <div class="s-sub">Methods / functions (DOES)</div>
+          </div>
+        </div>
+
+        <div class="highlight green" style="margin-top: 24px">
+          ☕ <strong>Remember:</strong> In Java, everything must be inside a
+          class. Class is imaginary, Object is real. Object = State + Behavior.
+          This is the foundation of all Java programming!
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

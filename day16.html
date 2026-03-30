@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 16</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html" class="active">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 16</div>
+        <h1>Method Types <span>📝</span></h1>
+        <p class="subtitle">
+          Complete coverage of Type 3 & Type 4 methods, parameters vs arguments
+        </p>
+        <div class="tags">
+          <div class="tag">Methods</div>
+          <div class="tag">Type 3 & 4</div>
+          <div class="tag">Parameters</div>
+          <div class="tag">Code Reusability</div>
+        </div>
+      </div>
+
+      <!-- 1. Recap from Day 15 -->
+      <section class="section" id="recap">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Recap from Day 15
+        </div>
+
+        <div class="card">
+          <p><strong>Methods = Code Reusability</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>4 Types of Methods:</strong></li>
+            <li>No Input, No Output</li>
+            <li>No Input, With Output</li>
+            <li>Input, No Output</li>
+            <li>Input, With Output</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>Previously covered:</strong> Type 1 & Type 2<br />
+          <strong>Today focus:</strong> Type 3 & Type 4
+        </div>
+      </section>
+
+      <!-- 2. Structure of a Method (Revision) -->
+      <section class="section" id="structure">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Structure of a Method (Revision)
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong></p>
+          <pre>
+access_modifier return_type methodName(parameters) {
+    // method body
+}</pre
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Access Modifier</strong></td>
+                <td>public/private</td>
+              </tr>
+              <tr>
+                <td><strong>Return Type</strong></td>
+                <td>What method returns</td>
+              </tr>
+              <tr>
+                <td><strong>Method Name</strong></td>
+                <td>Name of method</td>
+              </tr>
+              <tr>
+                <td><strong>Parameters</strong></td>
+                <td>Inputs</td>
+              </tr>
+              <tr>
+                <td><strong>Body</strong></td>
+                <td>Logic</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Important Terminology -->
+      <section class="section" id="terminology">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Important Terminology (NEW)
+        </div>
+
+        <div class="card">
+          <p><strong>Parameters vs Arguments</strong></p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Parameters</div>
+            <ul class="notes">
+              <li>Variables in method definition</li>
+              <li><code>public void add(int a, int b)</code></li>
+              <li><strong>a, b → Parameters</strong></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Arguments</div>
+            <ul class="notes">
+              <li>Values passed during method call</li>
+              <li><code>add(10, 20);</code></li>
+              <li><strong>10, 20 → Arguments</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight yellow">
+          <strong>KEY LINE:</strong> Parameters = Receiving | Arguments =
+          Sending
+        </div>
+      </section>
+
+      <!-- 4. Type 3 Method -->
+      <section class="section" id="type3">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Type 3 Method – Input + No Output
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+class Calculator {
+    int c;
+
+    public void add(int a, int b) {
+        c = a + b;
+        System.out.println(c);
+    }
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Calling:</strong></p>
+          <pre>
+Calculator cal = new Calculator();
+
+int num1 = 50;
+int num2 = 40;
+
+cal.add(num1, num2);</pre
+          >
+        </div>
+
+        <div class="highlight green"><strong>Output:</strong> 90</div>
+
+        <div class="card">
+          <p><strong>Key Points:</strong></p>
+          <ul class="notes">
+            <li>Takes input via parameters</li>
+            <li>Does NOT return → uses void</li>
+            <li>Prints directly</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5. Memory Execution -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Memory Execution (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Flow:</strong></p>
+          <ul class="notes">
+            <li>Main method → Stack frame created</li>
+            <li>Object → Heap memory</li>
+            <li>Local variables (num1, num2) → Stack</li>
+            <li>Method call → New stack frame</li>
+            <li>Parameters (a, b) get values</li>
+            <li>Execution → prints result</li>
+            <li>Stack frame removed</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>Important:</strong><br />
+          ✔ Local variables → Stack<br />
+          ✔ Instance variables → Heap<br />
+          ✔ Stack → LIFO (Last In First Out)
+        </div>
+      </section>
+
+      <!-- 6. Type 4 Method -->
+      <section class="section" id="type4">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Type 4 Method – Input + Output (MOST IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+class Calculator {
+    int c;
+
+    public int add(int a, int b) {
+        c = a + b;
+        return c;
+    }
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Calling:</strong></p>
+          <pre>
+Calculator cal = new Calculator();
+
+int num1 = 50;
+int num2 = 40;
+
+int result = cal.add(num1, num2);
+System.out.println(result);</pre
+          >
+        </div>
+
+        <div class="highlight green"><strong>Output:</strong> 90</div>
+
+        <div class="card">
+          <p><strong>Key Points:</strong></p>
+          <ul class="notes">
+            <li>Takes input</li>
+            <li>Returns value</li>
+            <li><strong>MOST reusable method</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 7. Return Concept -->
+      <section class="section" id="return">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Return Concept (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>What does return do?</strong></p>
+          <ul class="notes">
+            <li>Sends:</li>
+            <li><strong>Value</strong></li>
+            <li><strong>Control</strong></li>
+            <li>back to the caller</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Flow:</strong></p>
+          <ul class="notes">
+            <li>Method executes</li>
+            <li>return sends value</li>
+            <li>Control goes back to main</li>
+            <li>Value stored in variable</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 8. Pass by Value -->
+      <section class="section" id="passbyvalue">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Pass by Value (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Concept:</strong></p>
+          <pre>
+cal.add(num1, num2);
+
+👉 Values of num1, num2 are copied</pre
+          >
+        </div>
+
+        <div class="highlight yellow">
+          <strong>KEY IDEA:</strong> Changes inside method DO NOT affect
+          original variables
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+int a = 10;
+// Passed to method → copy created</pre
+          >
+        </div>
+      </section>
+
+      <!-- 9. Local vs Instance Variables -->
+      <section class="section" id="variables">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Local vs Instance Variables
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Where</th>
+                <th>Stored</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Local</strong></td>
+                <td>Inside method</td>
+                <td>Stack</td>
+              </tr>
+              <tr>
+                <td><strong>Instance</strong></td>
+                <td>Inside class</td>
+                <td>Heap</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10. Default Values -->
+      <section class="section" id="defaults">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Default Values
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>Instance variables</strong> → default value given</li>
+            <li>
+              <strong>Local variables</strong> → NO default (must initialize)
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 11. Code Reusability -->
+      <section class="section" id="reusability">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Code Reusability (MAIN PURPOSE)
+        </div>
+
+        <div class="grid-2">
+          <div class="highlight orange">
+            <strong>❌ Without Method:</strong><br />
+            Repeat same code multiple times
+          </div>
+          <div class="highlight green">
+            <strong>✅ With Method:</strong><br />
+            Write once → Call multiple times
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. Pattern Program Example -->
+      <section class="section" id="pattern">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Example – Pattern Program
+        </div>
+
+        <div class="card">
+          <pre>
+public void printSquare(int n) {
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            System.out.print("* ");
+        }
+        System.out.println();
+    }
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Calling:</strong></p>
+          <pre>
+printSquare(5);
+printSquare(3);
+printSquare(8);</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>Advantage:</strong><br />
+          ✔ One method → multiple outputs<br />
+          ✔ Reduced code
+        </div>
+      </section>
+
+      <!-- 13. Taking Input (Scanner) -->
+      <section class="section" id="scanner">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Taking Input (Scanner)
+        </div>
+
+        <div class="card">
+          <pre>
+Scanner sc = new Scanner(System.in);
+int n = sc.nextInt();
+
+printSquare(n);</pre
+          >
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>Input taken in main method</li>
+            <li>Passed to method</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 14. Method Execution Summary -->
+      <section class="section" id="summary">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Method Execution Summary
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Execution starts from main()</li>
+            <li>✔ Stack frame created</li>
+            <li>✔ Object → Heap</li>
+            <li>✔ Method call → New stack frame</li>
+            <li>✔ Return → control back</li>
+            <li>✔ Garbage collector cleans heap</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 15. Key Interview Points -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Key Interview Points
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Parameters vs Arguments</li>
+            <li>✔ Pass by Value</li>
+            <li>✔ Stack vs Heap</li>
+            <li>✔ Method Types</li>
+            <li>✔ Return vs Print</li>
+            <li>✔ Code Reusability</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>👉 4 Types of Methods:</strong><br />
+          1. No input, no output<br />
+          2. No input, output<br />
+          3. Input, no output<br />
+          4. Input, output ⭐
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

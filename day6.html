@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 6</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 20px 80px;
+        }
+        .sidebar {
+          width: 180px;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      pre {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--accent2);
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Flow */
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+      }
+      .flow div {
+        background: var(--surface2);
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html" class="active">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 6</div>
+        <h1>Pattern Programming &amp; <span>Loops Foundation</span></h1>
+        <p class="subtitle">
+          Understanding print vs println, for loops, nested loops, and pattern
+          programming logic.
+        </p>
+        <div class="tags">
+          <span class="tag">Loops</span>
+          <span class="tag">for Loop</span>
+          <span class="tag">Nested Loops</span>
+          <span class="tag">Patterns</span>
+          <span class="tag">print/println</span>
+          <span class="tag">Repetition</span>
+        </div>
+      </div>
+
+      <!-- 1. Quick Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-orange">🔁</div>
+          Quick Revision (Day 1–5)
+        </div>
+
+        <div class="card">
+          <p><strong>Java Basics Covered:</strong></p>
+          <ul class="notes">
+            <li>Java basics + platform independence</li>
+            <li>OOP → Object, Class, State, Behavior</li>
+            <li>Data types and variables</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Main Method Syntax:</strong></p>
+          <pre>
+public static void main(String[] args) {
+    // Entry point of program
+}</pre
+          >
+          <ul class="notes">
+            <li><strong>public</strong> → access modifier</li>
+            <li><strong>static</strong> → no object needed</li>
+            <li><strong>void</strong> → no return value</li>
+            <li><strong>main</strong> → entry point of program</li>
+            <li><strong>args</strong> → command-line arguments</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. Today's Goal -->
+      <section class="section" id="goal">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Today's Goal
+        </div>
+
+        <div class="highlight">Start Pattern Programming using Loops</div>
+
+        <div class="card">
+          <p><strong>We Will Learn:</strong></p>
+          <ul class="notes">
+            <li><code>print</code> vs <code>println</code></li>
+            <li>Loops (especially for loop)</li>
+            <li>Nested loops for patterns</li>
+            <li>Writing efficient code</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. Programming Mindset -->
+      <section class="section" id="mindset">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Important Concept: Programming Mindset
+        </div>
+
+        <div class="definition">
+          <div class="term">Two Parts in Coding</div>
+          <div class="meaning">
+            1. Thinking (Logic) = HARD | 2. Writing Code = EASY
+          </div>
+        </div>
+
+        <div class="highlight green">
+          Problem solving = Break the problem into smaller parts
+        </div>
+
+        <div class="card">
+          <p><strong>Key Insight:</strong></p>
+          <p>
+            Most time in coding is spent thinking about the logic, not writing
+            code. Good logic making = good programmer.
+          </p>
+        </div>
+      </section>
+
+      <!-- 4. Printing in Java -->
+      <section class="section" id="printing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🖥️</div>
+          Printing in Java
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Basic Output</strong></p>
+          <pre>System.out.print("*");</pre>
+          <p>Prints text on screen</p>
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 print vs println (VERY IMPORTANT)</strong></p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Method</th>
+              <th>Description</th>
+              <th>Cursor Position</th>
+            </tr>
+            <tr>
+              <td><code>print()</code></td>
+              <td>Prints output on screen</td>
+              <td>Stays on SAME line</td>
+            </tr>
+            <tr>
+              <td><code>println()</code></td>
+              <td>Prints output on screen</td>
+              <td>Moves to NEXT line</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>Using print():</strong></p>
+            <pre>
+System.out.print("*");
+System.out.print("*");</pre
+            >
+            <p><strong>Output:</strong></p>
+            <pre>**</pre>
+          </div>
+          <div class="card">
+            <p><strong>Using println():</strong></p>
+            <pre>
+System.out.println("*");
+System.out.println("*");</pre
+            >
+            <p><strong>Output:</strong></p>
+            <pre>
+*
+*</pre
+            >
+          </div>
+        </div>
+
+        <div class="highlight orange">
+          This difference is VERY important for pattern programming!
+        </div>
+      </section>
+
+      <!-- 5. Problem with Repetition -->
+      <section class="section" id="repetition">
+        <div class="section-title">
+          <div class="icon icon-orange">⚠️</div>
+          Problem with Repetition
+        </div>
+
+        <div class="card">
+          <p><strong>Example: Print 5 stars</strong></p>
+          <pre>
+System.out.println("*");
+System.out.println("*");
+System.out.println("*");
+System.out.println("*");
+System.out.println("*");</pre
+          >
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Bad Practice:</strong><br />
+          - Repeating code over and over<br />
+          - Not efficient<br />
+          - If 100 stars → 100 lines of code!
+        </div>
+
+        <div class="card">
+          <p><strong>Why Repetition is Bad:</strong></p>
+          <ul class="notes">
+            <li>Code becomes long and hard to maintain</li>
+            <li>Easy to make mistakes</li>
+            <li>Difficult to modify</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. Solution: Loops -->
+      <section class="section" id="loops">
+        <div class="section-title">
+          <div class="icon icon-blue">🔁</div>
+          Solution → Loops
+        </div>
+
+        <div class="definition">
+          <div class="term">Loop</div>
+          <div class="meaning">
+            A programming construct that repeats code automatically without
+            writing it multiple times.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Types of Loops in Java</strong></p>
+          <ul class="notes">
+            <li><code>for</code> loop</li>
+            <li><code>while</code> loop</li>
+            <li><code>do-while</code> loop</li>
+            <li><code>for-each</code> loop</li>
+          </ul>
+        </div>
+
+        <div class="highlight">Today's focus: <strong>for loop</strong></div>
+      </section>
+
+      <!-- 7. for Loop Syntax -->
+      <section class="section" id="for-syntax">
+        <div class="section-title">
+          <div class="icon icon-green">🔄</div>
+          for Loop Syntax
+        </div>
+
+        <div class="card">
+          <pre>
+for(initialization; condition; update) {
+    // body — code to repeat
+}</pre
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Part</th>
+              <th>Meaning</th>
+              <th>Example</th>
+            </tr>
+            <tr>
+              <td><strong>Initialization</strong></td>
+              <td>Start value</td>
+              <td><code>int i = 1</code></td>
+            </tr>
+            <tr>
+              <td><strong>Condition</strong></td>
+              <td>When to stop</td>
+              <td><code>i &lt;= 5</code></td>
+            </tr>
+            <tr>
+              <td><strong>Update</strong></td>
+              <td>Increment/decrement</td>
+              <td><code>i++</code></td>
+            </tr>
+            <tr>
+              <td><strong>Body</strong></td>
+              <td>Code to repeat</td>
+              <td>Inside { }</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Complete Example:</strong></p>
+          <pre>
+for(int i = 1; i <= 5; i++) {
+    System.out.println("*");
+}</pre
+          >
+          <p><strong>Output:</strong></p>
+          <pre>
+*
+*
+*
+*
+*</pre
+          >
+        </div>
+      </section>
+
+      <!-- 8. How for Loop Works -->
+      <section class="section" id="for-execution">
+        <div class="section-title">
+          <div class="icon icon-yellow">⚙️</div>
+          How for Loop Works (VERY IMPORTANT)
+        </div>
+
+        <div class="highlight yellow">
+          Understanding loop execution is a MUST for interviews!
+        </div>
+
+        <div class="card">
+          <p><strong>Step-by-Step Execution:</strong></p>
+          <ol class="notes" style="list-style: decimal; margin-left: 20px">
+            <li><strong>Initialization</strong> → i = 1</li>
+            <li><strong>Check Condition</strong> → is i &lt;= 5?</li>
+            <li>If <strong>TRUE</strong> → Execute body (print)</li>
+            <li><strong>Update</strong> → i++ (i becomes 2)</li>
+            <li>Go back to Step 2</li>
+            <li>If <strong>FALSE</strong> → Loop stops, program continues</li>
+          </ol>
+        </div>
+
+        <div class="highlight">This repetition happens automatically!</div>
+      </section>
+
+      <!-- 9. IDE (Eclipse) Advantage -->
+      <section class="section" id="ide">
+        <div class="section-title">
+          <div class="icon icon-blue">💡</div>
+          IDE (Eclipse) Advantage
+        </div>
+
+        <div class="card">
+          <p><strong>Without IDE:</strong></p>
+          <pre>
+javac MyProgram.java
+java MyProgram</pre
+          >
+          <p>Need to run commands in terminal</p>
+        </div>
+
+        <div class="card">
+          <p><strong>With IDE (Eclipse):</strong></p>
+          <ul class="notes">
+            <li>Write code</li>
+            <li>Click ▶ Run button</li>
+            <li>Output appears in console</li>
+          </ul>
+        </div>
+
+        <div class="highlight green">
+          IDE compiles and runs automatically — much faster!
+        </div>
+      </section>
+
+      <!-- 10. First Pattern -->
+      <section class="section" id="pattern1">
+        <div class="section-title">
+          <div class="icon icon-orange">🧱</div>
+          First Pattern (Single Line Stars)
+        </div>
+
+        <div class="card">
+          <p><strong>Pattern:</strong> Print 5 stars in one line</p>
+          <pre>
+for(int i = 1; i <= 5; i++) {
+    System.out.print("* ");
+}</pre
+          >
+          <p><strong>Output:</strong></p>
+          <pre>* * * * *</pre>
+        </div>
+
+        <div class="highlight">
+          Notice: <code>print()</code> not <code>println()</code> → stays on
+          same line
+        </div>
+      </section>
+
+      <!-- 11. Multi-Line Pattern -->
+      <section class="section" id="nested-loops">
+        <div class="section-title">
+          <div class="icon icon-green">🧱</div>
+          Multi-Line Pattern (Using Nested Loops)
+        </div>
+
+        <div class="card">
+          <p><strong>Goal:</strong> Print a 5x5 square of stars</p>
+          <pre>
+* * * * *
+* * * * *
+* * * * *
+* * * * *
+* * * * *</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= 5; i++) {
+    for(int j = 1; j <= 5; j++) {
+        System.out.print("* ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Variable</th>
+              <th>Role</th>
+            </tr>
+            <tr>
+              <td><strong>i</strong></td>
+              <td>Rows (outer loop)</td>
+            </tr>
+            <tr>
+              <td><strong>j</strong></td>
+              <td>Columns (inner loop)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="definition">
+          <div class="term">Nested Loop</div>
+          <div class="meaning">
+            A loop inside another loop. Outer loop controls rows, inner loop
+            controls columns.
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. Using Variable n -->
+      <section class="section" id="variable-n">
+        <div class="section-title">
+          <div class="icon icon-yellow">🎯</div>
+          Using Variable n (BEST PRACTICE)
+        </div>
+
+        <div class="highlight yellow">
+          Instead of hardcoding numbers, use a variable for flexibility
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int n = 5;
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= n; j++) {
+        System.out.print("* ");
+    }
+    System.out.println();
+}</pre
+          >
+          <p style="margin-top: 12px">
+            <strong>Advantage:</strong> Change only <code>n = 5</code> to
+            <code>n = 10</code> → Pattern size changes!
+          </p>
+        </div>
+      </section>
+
+      <!-- 13. Number Patterns -->
+      <section class="section" id="number-patterns">
+        <div class="section-title">
+          <div class="icon icon-blue">🔢</div>
+          Number Patterns
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Pattern 1 (Row-based):</strong></p>
+          <p>Print row number in each column</p>
+          <pre>
+1 1 1 1 1
+2 2 2 2 2
+3 3 3 3 3
+4 4 4 4 4
+5 5 5 5 5</pre
+          >
+          <pre>
+for(int i = 1; i <= 5; i++) {
+    for(int j = 1; j <= 5; j++) {
+        System.out.print(i + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🔹 Pattern 2 (Column-based):</strong></p>
+          <p>Print column number in each row</p>
+          <pre>
+1 2 3 4 5
+1 2 3 4 5
+1 2 3 4 5
+1 2 3 4 5
+1 2 3 4 5</pre
+          >
+          <pre>
+for(int i = 1; i <= 5; i++) {
+    for(int j = 1; j <= 5; j++) {
+        System.out.print(j + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 14. Concatenation -->
+      <section class="section" id="concatenation">
+        <div class="section-title">
+          <div class="icon icon-orange">🔗</div>
+          Important Concept: Concatenation
+        </div>
+
+        <div class="definition">
+          <div class="term">Concatenation</div>
+          <div class="meaning">
+            Combining different values (numbers, strings) together using the +
+            operator.
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>System.out.print(i + " ");</pre>
+          <ul class="notes">
+            <li><code>" "</code> = String (with quotes)</li>
+            <li><code>+</code> = Combine operator</li>
+            <li><code>i</code> = Variable (without quotes)</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>📌 Rule:</strong><br />
+          Without quotes → Variable<br />
+          With quotes → String value
+        </div>
+      </section>
+
+      <!-- 15. Grid Method -->
+      <section class="section" id="grid-method">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Grid Method (BEST TRICK)
+        </div>
+
+        <div class="highlight green">
+          Convert every pattern into a table/grid to understand it easily
+        </div>
+
+        <div class="card">
+          <p><strong>How to Use Grid Method:</strong></p>
+          <ul class="notes">
+            <li><strong>i</strong> = Rows (outer loop)</li>
+            <li><strong>j</strong> = Columns (inner loop)</li>
+            <li>Think: "What value at position (i, j)?"</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Example Grid for Number Pattern:</strong></p>
+          <table>
+            <tr>
+              <th>i\j</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+            </tr>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+          </table>
+          <p style="margin-top: 12px">
+            <strong>Pattern:</strong> Print <code>j</code> at each position →
+            <code>System.out.print(j)</code>
+          </p>
+        </div>
+      </section>
+
+      <!-- 16. Key Idea for Patterns -->
+      <section class="section" id="pattern-key">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧩</div>
+          Key Idea for Patterns
+        </div>
+
+        <div class="highlight yellow">
+          All pattern problems depend on: <strong>WHAT to print</strong> and
+          <strong>WHEN to print</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>Pattern Logic:</strong></p>
+          <ul class="notes">
+            <li>Loops structure remains SAME</li>
+            <li>Only the "what to print" logic changes</li>
+            <li>Outer loop always handles rows</li>
+            <li>Inner loop always handles columns</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 17. Key Takeaways -->
+      <section class="section" id="takeaways">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Key Takeaways
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>
+              <code>print()</code> vs <code>println()</code> → VERY IMPORTANT
+              difference
+            </li>
+            <li>Loops avoid repetition and make code efficient</li>
+            <li><code>for</code> loop = foundation of pattern programming</li>
+            <li>Nested loops → patterns with rows and columns</li>
+            <li>
+              <strong>i</strong> = rows, <strong>j</strong> = columns (always)
+            </li>
+            <li>Grid method helps understand any pattern</li>
+            <li>Logic matters more than coding</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 18. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-orange">📢</div>
+          Interview Questions
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>
+              Difference between <code>print()</code> and <code>println()</code>
+            </li>
+            <li>What is a loop? Why do we need loops?</li>
+            <li>Types of loops in Java</li>
+            <li>Explain for loop execution step-by-step</li>
+            <li>What is nested loop? Explain with example</li>
+            <li>How does pattern programming work?</li>
+            <li>Difference between i and j in patterns</li>
+            <li>What is concatenation?</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 19. Final Understanding -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Final Simple Understanding
+        </div>
+
+        <div class="highlight green">
+          <strong>Programming = Logic + Practice</strong><br /><br />
+          <strong>Pattern Logic:</strong><br />
+          • Outer loop → Rows<br />
+          • Inner loop → Columns<br />
+          • Print based on condition
+        </div>
+
+        <div class="card">
+          <p><strong>Key Success Formula:</strong></p>
+          <pre>Understand Pattern → Make Grid → Write Code</pre>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

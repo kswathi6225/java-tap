@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 18</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html" class="active">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 18</div>
+        <h1>Arrays <span>📊</span></h1>
+        <p class="subtitle">
+          Introduction to collections – solving storage and retrieval problems
+        </p>
+        <div class="tags">
+          <div class="tag">Arrays</div>
+          <div class="tag">1D</div>
+          <div class="tag">2D</div>
+          <div class="tag">3D</div>
+        </div>
+      </div>
+
+      <!-- 1. Introduction to Arrays -->
+      <section class="section" id="intro">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Introduction to Arrays – The Problem
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Problem with Old Method</strong><br />
+          Before arrays, storing data like this:<br />
+          <code>int a, b, c, d, e;</code>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>For 5 students:</strong> OK ✔</p>
+          </div>
+          <div class="card">
+            <p><strong>For 50 students:</strong> Messy ❌</p>
+          </div>
+        </div>
+
+        <div class="highlight orange">
+          <strong>🚨 Issues:</strong><br />
+          ✔ Too many variables<br />
+          ✔ Hard to manage<br />
+          ✔ Difficult to retrieve data
+        </div>
+
+        <div class="card">
+          <p><strong>💡 Solution → ARRAYS</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>✔ Storage problem solved</li>
+            <li>✔ Retrieval problem solved</li>
+            <li>✔ Code readability improved</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. What is an Array? -->
+      <section class="section" id="definition">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          What is an Array?
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">
+            Array = Collection of similar (homogeneous) data
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+int[] ages = new int[5];
+
+👉 Stores 5 integer values</pre
+          >
+        </div>
+      </section>
+
+      <!-- 3. Key Characteristics -->
+      <section class="section" id="characteristics">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Key Characteristics
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Stores same type of data</li>
+            <li>✔ Stored in continuous memory</li>
+            <li>✔ Access using index</li>
+            <li>✔ Arrays are objects in Java</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Important Concept – Index -->
+      <section class="section" id="index">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Important Concept – Index
+        </div>
+
+        <div class="highlight">
+          <strong>📌 Index always starts from 0</strong>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Index</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1st</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>2nd</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>3rd</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>4th</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>5th</td>
+                <td>4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight yellow">
+          <strong>💡 Formula:</strong> nth element → index = n - 1
+        </div>
+      </section>
+
+      <!-- 5. Steps to Create Array -->
+      <section class="section" id="steps">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Steps to Create Array (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 3 Key Observations:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>1️⃣ Dimensionality</strong> – 1D, 2D, 3D</li>
+            <li><strong>2️⃣ Type of Data</strong> – Homogeneous (same type)</li>
+            <li><strong>3️⃣ Nature</strong> – Regular (for now)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. Creating 1D Array -->
+      <section class="section" id="1d-array">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Creating 1D Array
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong></p>
+          <pre>int[] a = new int[5];</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>new</strong></td>
+                <td>Calls JVM</td>
+              </tr>
+              <tr>
+                <td><strong>int</strong></td>
+                <td>Data type</td>
+              </tr>
+              <tr>
+                <td><strong>[5]</strong></td>
+                <td>Size</td>
+              </tr>
+              <tr>
+                <td><strong>a</strong></td>
+                <td>Reference</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Memory Representation -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Memory Representation
+        </div>
+
+        <div class="highlight">
+          <strong>👉 JVM creates array in Heap Memory</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+int[] a = new int[5];
+
+Internally:
+Index:   0   1   2   3   4
+Value:   0   0   0   0   0</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>💡 Important:</strong><br />
+          ✔ Default value of int → 0<br />
+          ✔ Index starts from 0
+        </div>
+      </section>
+
+      <!-- 8. Accessing Elements -->
+      <section class="section" id="accessing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Accessing Elements
+        </div>
+
+        <div class="card">
+          <pre>
+System.out.println(a[2]);
+
+👉 Access 3rd element</pre
+          >
+        </div>
+      </section>
+
+      <!-- 9. Updating Values -->
+      <section class="section" id="updating">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Updating Values
+        </div>
+
+        <div class="card">
+          <pre>
+a[0] = 10;
+a[1] = 20;
+a[2] = 30;
+a[3] = 40;
+a[4] = 50;</pre
+          >
+        </div>
+      </section>
+
+      <!-- 10. Input Using Scanner -->
+      <section class="section" id="scanner">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Input Using Scanner
+        </div>
+
+        <div class="card">
+          <pre>
+import java.util.Scanner;
+
+Scanner sc = new Scanner(System.in);
+
+for(int i = 0; i < 5; i++) {
+    a[i] = sc.nextInt();
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 11. Printing Array -->
+      <section class="section" id="printing">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Printing Array
+        </div>
+
+        <div class="card">
+          <pre>
+for(int i = 0; i < 5; i++) {
+    System.out.println(a[i]);
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 12. Why Loops are Important -->
+      <section class="section" id="loops">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Why Loops are Important
+        </div>
+
+        <div class="grid-2">
+          <div class="highlight orange">
+            <strong>❌ Without loop:</strong><br />
+            <code>a[0] = sc.nextInt();</code><br />
+            <code>a[1] = sc.nextInt();</code><br />
+            ...
+          </div>
+          <div class="highlight green">
+            <strong>✔ With loop:</strong><br />
+            Avoids repetition ✔<br />
+            Cleaner code ✔<br />
+            Scalable ✔
+          </div>
+        </div>
+      </section>
+
+      <!-- 13. 2D Array (Matrix Concept) -->
+      <section class="section" id="2d-array">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          2D Array (Matrix Concept)
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Scenario:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>👉 2 classrooms, 5 students each</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong></p>
+          <pre>int[][] a = new int[2][5];</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>2</strong></td>
+                <td>Rows (classrooms)</td>
+              </tr>
+              <tr>
+                <td><strong>5</strong></td>
+                <td>Columns (students)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 14. Accessing 2D Array -->
+      <section class="section" id="2d-accessing">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Accessing 2D Array
+        </div>
+
+        <div class="card">
+          <pre>
+a[1][0] = 20;
+
+👉 Row 1 → 2nd classroom
+👉 Column 0 → 1st student</pre
+          >
+        </div>
+      </section>
+
+      <!-- 15. 3D Array -->
+      <section class="section" id="3d-array">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          3D Array
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Scenario:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>👉 2 schools → 3 classes → 5 students</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Syntax:</strong></p>
+          <pre>int[][][] a = new int[2][3][5];</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Concept</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1</strong></td>
+                <td>School</td>
+              </tr>
+              <tr>
+                <td><strong>2</strong></td>
+                <td>Classroom</td>
+              </tr>
+              <tr>
+                <td><strong>3</strong></td>
+                <td>Student</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 16. Accessing 3D Array -->
+      <section class="section" id="3d-accessing">
+        <div class="section-title">
+          <div class="icon icon-yellow">🚀</div>
+          Accessing 3D Array
+        </div>
+
+        <div class="card">
+          <pre>
+a[1][0][2] = 15;
+
+👉 School 2 → Class 1 → Student 3</pre
+          >
+        </div>
+      </section>
+
+      <!-- 17. Important Notes -->
+      <section class="section" id="notes">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Important Notes
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li>✔ Arrays are stored in heap</li>
+            <li>✔ Default values are assigned</li>
+            <li>✔ Index starts from 0</li>
+            <li>✔ Access using [] operator</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 18. Real Insight -->
+      <section class="section" id="insight">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Real Insight (VERY IMPORTANT)
+        </div>
+
+        <div class="highlight">
+          <strong>👉 In real world:</strong><br />
+          Most problems use 1D arrays<br />
+          2D arrays → matrices<br />
+          3D arrays → rare
+        </div>
+
+        <div class="highlight yellow">
+          <strong>💡 Interview Tip:</strong> 90% questions → 1D arrays
+        </div>
+      </section>
+
+      <!-- 19. Key Concept -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Key Concept (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Easy Access:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Want 323rd student?</li>
+            <li><code>a[322]</code></li>
+            <li>👉 No confusion like variables</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong
+            >✔ Array = collection of same data<br />
+            ✔ Index starts from 0<br />
+            ✔ Use loops for efficiency<br />
+            ✔ 1D, 2D, 3D arrays<br />
+            ✔ Stored in heap</strong
+          >
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

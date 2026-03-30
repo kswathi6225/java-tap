@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 9</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .flow div {
+        background: var(--surface2);
+        border: 1px solid var(--accent2);
+        padding: 12px 16px;
+        border-radius: 8px;
+        color: var(--accent2);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html" class="active">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 9</div>
+        <h1>Data Storage & Binary <span>⚡</span></h1>
+        <p class="subtitle">
+          How data is actually stored in RAM with binary conversion
+        </p>
+        <div class="tags">
+          <div class="tag">Binary</div>
+          <div class="tag">MSB</div>
+          <div class="tag">2's Complement</div>
+          <div class="tag">ASCII</div>
+        </div>
+      </div>
+
+      <!-- 1. How Data is Stored in Memory -->
+      <section class="section" id="storage">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          How Data is Stored in Memory (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong> <code>byte a = 24;</code></p>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 1: Convert to Binary (Base 2)</strong></p>
+          <p style="margin-top: 12px; color: var(--muted)">
+            Use divide by 2 method:
+          </p>
+          <pre>
+24 ÷ 2 → remainder 0
+12 ÷ 2 → remainder 0
+6 ÷ 2 → remainder 0
+3 ÷ 2 → remainder 1
+1 ÷ 2 → remainder 1</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>Step 2: Read bottom to top</strong></p>
+          <pre style="margin-top: 8px">11000</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 3: Make it 8 bits (byte = 8 bits)</strong></p>
+          <pre style="margin-top: 8px">00011000</pre>
+        </div>
+
+        <div class="highlight green">✔ This is how 24 is stored in RAM!</div>
+
+        <div class="definition">
+          <div class="term">📌 Key Point</div>
+          <div class="meaning">
+            Every number you use in Java is first converted to binary before
+            being stored in RAM. Data types define how many bits are used.
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. MSB (Most Significant Bit) -->
+      <section class="section" id="msb">
+        <div class="section-title">
+          <div class="icon icon-orange">⚡</div>
+          MSB (Most Significant Bit)
+        </div>
+
+        <div class="card">
+          <p>
+            <strong>👉 Definition:</strong> The first bit in binary
+            representation
+          </p>
+          <pre style="margin-top: 12px">
+00011000
+↑
+└─ MSB (Most Significant Bit)</pre
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>MSB Value</th>
+              <th>Meaning</th>
+            </tr>
+            <tr>
+              <td>0</td>
+              <td><strong>Positive</strong> number</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td><strong>Negative</strong> number</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong></p>
+          <pre>
+00011000 → MSB = 0 → Positive ✓
+11100111 → MSB = 1 → Negative ✓</pre
+          >
+        </div>
+
+        <div class="highlight">
+          So computer knows if a number is positive or negative just by looking
+          at the first bit!
+        </div>
+      </section>
+
+      <!-- 3. Negative Numbers (VERY IMPORTANT) -->
+      <section class="section" id="negative">
+        <div class="section-title">
+          <div class="icon icon-red icon-orange">🔴</div>
+          Negative Numbers (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Example:</strong> <code>byte a = -24;</code></p>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 1: Convert +24 to binary</strong></p>
+          <pre style="margin-top: 8px">00011000</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 2: 1's Complement (flip/invert all bits)</strong></p>
+          <pre style="margin-top: 8px">11100111</pre>
+          <p style="margin-top: 8px; color: var(--muted)">
+            <strong>0 becomes 1, 1 becomes 0</strong>
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 3: Add 1 (2's Complement)</strong></p>
+          <pre style="margin-top: 8px">11100111 + 1 = 11101000</pre>
+        </div>
+
+        <div class="highlight orange">
+          <strong>✔ Final answer = 11101000 is binary of -24</strong>
+        </div>
+
+        <div class="definition">
+          <div class="term">📌 Key Rule</div>
+          <div class="meaning">
+            <strong>Positive numbers:</strong> Convert using Base 2
+            <br /><strong>Negative numbers:</strong> Convert using Base 2 + 2's
+            Complement
+          </div>
+        </div>
+
+        <div class="highlight green">
+          This is called <strong>2's Complement representation</strong> - used
+          by Java for storing negative numbers!
+        </div>
+      </section>
+
+      <!-- 4. Important Concept -->
+      <section class="section" id="concept">
+        <div class="section-title">
+          <div class="icon icon-blue">🧠</div>
+          Important Concept
+        </div>
+
+        <div class="definition">
+          <div class="term">Why data types are called converters:</div>
+          <div class="meaning">
+            Real data (human-readable) → Binary (0 & 1) → Stored in RAM
+            <br /><br />
+            Data types handle this complete conversion process!
+          </div>
+        </div>
+
+        <div class="flow">
+          <div>Real Value</div>
+          <div>→</div>
+          <div>Data Type</div>
+          <div>→</div>
+          <div>Binary</div>
+          <div>→</div>
+          <div>RAM</div>
+        </div>
+
+        <div class="highlight green">
+          <strong>✔ This is the REAL meaning of data types</strong> - not just
+          "types of data"
+        </div>
+      </section>
+
+      <!-- 5. Real Number Data Types -->
+      <section class="section" id="real-numbers">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔢</div>
+          Real Number Data Types
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Used for decimal values</strong></p>
+          <p style="margin-top: 12px; color: var(--muted)">
+            Examples: 5.11, 6.25, 45.5
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>🟡 1. float</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Size:</strong> 4 bytes (32 bits)</li>
+            <li><strong>Range:</strong> ~ -3.4 × 10^38 to +3.4 × 10^38</li>
+            <li><strong>Code:</strong> <code>float a = 45.5f;</code></li>
+            <li><strong>Note:</strong> Must add <code>f</code> suffix</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔵 2. double</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Size:</strong> 8 bytes (64 bits)</li>
+            <li><strong>Range:</strong> ~ -1.7 × 10^308 to +1.7 × 10^308</li>
+            <li><strong>Code:</strong> <code>double a = 45.5;</code></li>
+            <li>
+              <strong>Default:</strong> All decimal numbers are treated as
+              double by default
+            </li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          Both use special internal representation to store huge values in
+          limited bits!
+        </div>
+      </section>
+
+      <!-- 6. VERY IMPORTANT RULE -->
+      <section class="section" id="rule">
+        <div class="section-title">
+          <div class="icon icon-orange">⚠️</div>
+          VERY IMPORTANT RULE (INTERVIEW QUESTION)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 By default:</strong></p>
+          <p style="margin-top: 12px; font-size: 16px">
+            All decimal numbers → <strong>double</strong>
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong Code:</strong></p>
+          <pre style="margin-top: 8px">float a = 45.5;   // ERROR</pre>
+          <p style="margin-top: 12px; color: var(--accent)">
+            <strong>Error:</strong> cannot convert from double to float
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>🔥 Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>double</strong> = 8 bytes</li>
+            <li><strong>float</strong> = 4 bytes</li>
+            <li>Bigger container → smaller container ❌ Not allowed</li>
+            <li>Data loss risk!</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ Correct Solution:</strong></p>
+          <pre style="margin-top: 8px">
+float a = 45.5f;   // ✓ With f suffix</pre
+          >
+          <p style="margin-top: 12px; color: var(--muted)">
+            The <code>f</code> suffix tells Java: "Treat this as float, not
+            double"
+          </p>
+        </div>
+
+        <div class="highlight green">
+          <strong>Rule:</strong> Always use <code>f</code> suffix for float
+          values!
+        </div>
+      </section>
+
+      <!-- 7. Float vs Double -->
+      <section class="section" id="float-vs-double">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Float vs Double (IMPORTANT)
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Feature</th>
+              <th>float</th>
+              <th>double</th>
+            </tr>
+            <tr>
+              <td><strong>Precision</strong></td>
+              <td>Low</td>
+              <td>High</td>
+            </tr>
+            <tr>
+              <td><strong>Bytes</strong></td>
+              <td>4</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td><strong>Decimal Accuracy</strong></td>
+              <td>~6 digits</td>
+              <td>~15+ digits</td>
+            </tr>
+            <tr>
+              <td><strong>Default</strong></td>
+              <td>❌ Not default</td>
+              <td>✓ Default for decimals</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Examples:</strong></p>
+          <pre>
+65              → int (no decimal)
+65.2            → could be float
+65.283649521    → should be double (high precision)</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>Rule of Thumb:</strong> Need high precision? Use
+          <strong>double</strong>. Need to save memory? Use
+          <strong>float</strong>.
+        </div>
+      </section>
+
+      <!-- 8. Why float & double can store large values -->
+      <section class="section" id="large-storage">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          Why float & double can store large values?
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Because of:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Compression</li>
+            <li>Special internal representation</li>
+          </ul>
+        </div>
+
+        <div class="definition">
+          <div class="term">How it works:</div>
+          <div class="meaning">
+            float & double don't store numbers directly. They use a special
+            format (IEEE 754) that efficiently encodes huge values using limited
+            bits. Like scientific notation: 3.4 × 10^38
+          </div>
+        </div>
+
+        <div class="highlight green">
+          They trade exact precision for the ability to store enormous ranges!
+        </div>
+      </section>
+
+      <!-- 9. Character Data (INTRO) -->
+      <section class="section" id="character">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔤</div>
+          Character Data (INTRO)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Reality:</strong></p>
+          <p style="margin-top: 12px; color: var(--muted)">
+            RAM cannot store: A, B, C, D...
+          </p>
+        </div>
+
+        <div class="highlight orange">RAM only stores: 0 and 1</div>
+
+        <div class="card">
+          <p><strong>🧠 Idea:</strong></p>
+          <p style="margin-top: 12px">Assign binary codes to characters:</p>
+          <pre style="margin-top: 12px">
+A → 00
+B → 01
+C → 10
+D → 11</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>✔ This is how characters are stored!</strong>
+        </div>
+
+        <div class="definition">
+          <div class="term">Key Concept:</div>
+          <div class="meaning">
+            Each character is mapped to a unique binary code. This code is
+            stored in RAM, then converted back to characters when displayed.
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Code Length Formula -->
+      <section class="section" id="formula">
+        <div class="section-title">
+          <div class="icon icon-blue">💡</div>
+          Code Length Formula
+        </div>
+
+        <div class="definition">
+          <div class="term">Formula:</div>
+          <div class="meaning">
+            If symbols = N
+            <br />Length = log₂(N)
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Examples:</strong></p>
+          <table class="table-wrap">
+            <table>
+              <tr>
+                <th>Total Symbols</th>
+                <th>Code Length (bits)</th>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>2 bits (2² = 4)</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>3 bits (2³ = 8)</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>4 bits (2⁴ = 16)</td>
+              </tr>
+              <tr>
+                <td>256</td>
+                <td>8 bits (2⁸ = 256)</td>
+              </tr>
+            </table>
+          </table>
+        </div>
+
+        <div class="highlight green">
+          This formula helps us determine how many bits we need for any set of
+          symbols!
+        </div>
+      </section>
+
+      <!-- 11. ASCII Table (VERY IMPORTANT) -->
+      <section class="section" id="ascii">
+        <div class="section-title">
+          <div class="icon icon-orange">🇺🇸</div>
+          ASCII Table (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Full Form:</strong></p>
+          <p style="margin-top: 8px; color: var(--accent2)">
+            American Standard Code for Information Interchange
+          </p>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Total Symbols:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>128 characters total</li>
+            <li>Bits required: 2⁷ = 128</li>
+            <li>So: <strong>7-bit code system</strong></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>📋 Includes:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li><strong>Numbers:</strong> 0–9</li>
+            <li><strong>Alphabets:</strong> A–Z, a–z</li>
+            <li><strong>Special symbols:</strong> @, #, %, &, etc.</li>
+            <li>
+              <strong>Control characters:</strong> space, newline, tab, etc.
+            </li>
+          </ul>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Character</th>
+              <th>ASCII Value</th>
+              <th>Binary</th>
+            </tr>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>65</td>
+              <td>01000001</td>
+            </tr>
+            <tr>
+              <td><strong>a</strong></td>
+              <td>97</td>
+              <td>01100001</td>
+            </tr>
+            <tr>
+              <td><strong>0</strong></td>
+              <td>48</td>
+              <td>00110000</td>
+            </tr>
+            <tr>
+              <td><strong>@</strong></td>
+              <td>64</td>
+              <td>01000000</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="highlight green">
+          Every character in Java has an ASCII value! When you store 'A', Java
+          actually stores 65 (its ASCII code).
+        </div>
+      </section>
+
+      <!-- 12. Final Summary -->
+      <section class="section" id="summary">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Final Summary
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>✅ Integer Data</strong></p>
+            <ul class="notes" style="margin-top: 12px">
+              <li>byte, short, int, long</li>
+              <li>Stored using binary</li>
+              <li>MSB indicates sign</li>
+              <li>Negative = 2's Complement</li>
+            </ul>
+          </div>
+          <div class="card">
+            <p><strong>✅ Real Numbers</strong></p>
+            <ul class="notes" style="margin-top: 12px">
+              <li>float, double</li>
+              <li>Default = double</li>
+              <li>Use f suffix for float</li>
+              <li>Store huge ranges efficiently</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Characters</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Stored using ASCII codes</li>
+            <li>128 total ASCII characters</li>
+            <li>7-bit representation</li>
+            <li>Each character = binary number</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 13. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-yellow">🎯</div>
+          Most Important Interview Questions
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Be ready to answer:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>
+              <strong>What is data type?</strong> → Converter between real &
+              binary data
+            </li>
+            <li>
+              <strong>How is data stored in RAM?</strong> → Converted to binary
+              using data type
+            </li>
+            <li>
+              <strong>What is MSB?</strong> → First bit; 0=positive, 1=negative
+            </li>
+            <li>
+              <strong>What is 2's Complement?</strong> → Method to store
+              negative numbers
+            </li>
+            <li>
+              <strong>Difference between float & double?</strong> → Bytes (4 vs
+              8), precision, default
+            </li>
+            <li>
+              <strong>Why does float need f suffix?</strong> → Because default
+              is double (8 bytes)
+            </li>
+            <li>
+              <strong>What is ASCII?</strong> → Character encoding standard with
+              128 symbols
+            </li>
+            <li>
+              <strong>How are characters stored?</strong> → As ASCII codes
+              (binary numbers)
+            </li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          These questions are VERY common in interviews! Know them deeply!
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

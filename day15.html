@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 15</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html" class="active">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 15</div>
+        <h1>Methods <span>⚙️</span></h1>
+        <p class="subtitle">Reusable blocks of code – Behavior of objects</p>
+        <div class="tags">
+          <div class="tag">Methods</div>
+          <div class="tag">Return Type</div>
+          <div class="tag">Parameters</div>
+          <div class="tag">Stack</div>
+        </div>
+      </div>
+
+      <!-- 1. Recap -->
+      <section class="section" id="recap">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Recap (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Before starting:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>✔ Pass by Value</li>
+            <li>✔ Pass by Reference</li>
+            <li>✔ OOP Rule → Object has:</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>OOP Components:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>State (Variables)</li>
+            <li>Behavior (Methods)</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Today focus = Behavior → Methods</strong>
+        </div>
+      </section>
+
+      <!-- 2. What is a Method? -->
+      <section class="section" id="definition">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          What is a Method?
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">
+            A method is a block of code used to perform a specific task
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>Structure:</strong></p>
+          <pre>
+access_modifier return_type methodName() {
+    // method body
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Example:</strong></p>
+          <pre>
+public void add() {
+    System.out.println("Hello");
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 3. Parts of a Method -->
+      <section class="section" id="parts">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Parts of a Method
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 1. Access Modifier</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>public, private, etc.</li>
+            <li>Controls visibility</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 2. Return Type</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>What method gives back</li>
+            <li>Example: int, void</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 3. Method Name</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Should be meaningful</li>
+            <li>Example: add(), calculateSum()</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 4. Parentheses ()</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Used to take input</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✔ 5. Body { }</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Contains logic</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Why Methods? -->
+      <section class="section" id="why">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Why Methods?
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Problem without methods:</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Code repeated again & again</li>
+            <li>Difficult to manage</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Solution: Methods provide:</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Code Reusability</li>
+            <li>Clean code</li>
+            <li>Easy debugging</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5. Types of Methods -->
+      <section class="section" id="types">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Types of Methods (MAIN CONCEPT)
+        </div>
+
+        <div class="highlight green">
+          <strong>💡 There are 4 types of methods:</strong>
+          <br />🔹 1. No Input, No Output <br />🔹 2. No Input, With Output
+          <br />🔹 3. With Input, No Output <br />🔹 4. With Input, With Output
+        </div>
+      </section>
+
+      <!-- 6. Type 1: No Input, No Output -->
+      <section class="section" id="type1">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Type 1: No Input, No Output
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Example:</strong></p>
+          <pre>
+class Calculator {
+    int a = 50;
+    int b = 40;
+
+    public void add() {
+        int c = a + b;
+        System.out.println(c);
+    }
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Calling Method:</strong></p>
+          <pre>
+Calculator c = new Calculator();
+c.add();</pre
+          >
+        </div>
+
+        <div class="highlight"><strong>🧠 Output:</strong> 90</div>
+
+        <div class="card">
+          <p><strong>💡 Key Point:</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Prints result</li>
+            <li>Does NOT return anything</li>
+            <li>👉 return type = void</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 7. Method Execution -->
+      <section class="section" id="execution">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Method Execution (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Steps:</strong></p>
+          <ul class="notes" style="margin-top: 8px">
+            <li>Main method starts → stack frame created</li>
+            <li>Object created → heap memory</li>
+            <li>Method call → new stack frame</li>
+            <li>Execution happens</li>
+            <li>Method removed from stack</li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          <strong>👉 Stack follows:</strong>
+          <br />LIFO (Last In First Out)
+        </div>
+      </section>
+
+      <!-- 8. Stack vs Heap -->
+      <section class="section" id="stack-vs-heap">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Stack vs Heap
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p><strong>📌 Stack:</strong></p>
+            <ul class="notes" style="margin-top: 8px">
+              <li>Stores methods & local variables</li>
+              <li>Works on LIFO</li>
+            </ul>
+          </div>
+          <div class="card">
+            <p><strong>📌 Heap:</strong></p>
+            <ul class="notes" style="margin-top: 8px">
+              <li>Stores objects</li>
+              <li>Contains instance variables</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Garbage Object -->
+      <section class="section" id="garbage">
+        <div class="section-title">
+          <div class="icon icon-blue">🚀</div>
+          Garbage Object
+        </div>
+
+        <div class="definition">
+          <div class="term">Definition:</div>
+          <div class="meaning">Object without reference</div>
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Example:</strong></p>
+          <pre>
+Calculator c = new Calculator();
+
+After execution:
+
+c removed
+Object remains → becomes garbage</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          <strong>👉 Cleaned by:</strong>
+          <br />Garbage Collector (Automatic in Java)
+        </div>
+      </section>
+
+      <!-- 10. Type 2: No Input, With Output -->
+      <section class="section" id="type2">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Type 2: No Input, With Output
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Example:</strong></p>
+          <pre>
+class Calculator {
+    int a = 50;
+    int b = 40;
+
+    public int add() {
+        int c = a + b;
+        return c;
+    }
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 11. Calling This Method -->
+      <section class="section" id="calling-type2">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Calling This Method
+        </div>
+
+        <div class="card">
+          <pre>
+Calculator c = new Calculator();
+int result = c.add();
+System.out.println(result);</pre
+          >
+        </div>
+
+        <div class="highlight"><strong>🧠 Output:</strong> 90</div>
+      </section>
+
+      <!-- 12. Important Difference -->
+      <section class="section" id="difference">
+        <div class="section-title">
+          <div class="icon icon-yellow">🟢</div>
+          Important Difference: Printing vs Returning
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Printing</th>
+              <th>Returning</th>
+            </tr>
+            <tr>
+              <td>Shows output directly</td>
+              <td>Sends value back</td>
+            </tr>
+            <tr>
+              <td>System.out.println()</td>
+              <td>return</td>
+            </tr>
+            <tr>
+              <td>No reuse</td>
+              <td>Reusable</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- 13. Memory Flow -->
+      <section class="section" id="memory-flow">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Memory Flow (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>👉 When method returns:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>Value + control → goes back to main</li>
+            <li>Stored in variable</li>
+            <li>Then printed</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 14. Return Type Rules -->
+      <section class="section" id="return-rules">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Return Type Rules
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Rule: Return type must match returned value</strong></p>
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong:</strong></p>
+          <pre>
+public void add() {
+    return 10; // ERROR
+}</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Correct:</strong></p>
+          <pre>
+public int add() {
+    return 10;
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 15. Type Casting Connection -->
+      <section class="section" id="type-casting">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Type Casting Connection (From Lecture)
+        </div>
+
+        <div class="card">
+          <p><strong>📌 Example:</strong></p>
+          <pre>
+int a = 50;
+float b = 40;
+
+👉 a + b → result = float</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong:</strong></p>
+          <pre>int c = a + b;</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Fix:</strong></p>
+          <pre>int c = (int)(a + b);</pre>
+        </div>
+      </section>
+
+      <!-- 16. Important Concepts Covered -->
+      <section class="section" id="concepts">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Important Concepts Covered
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>Method creation</strong></li>
+            <li><strong>Method calling</strong></li>
+            <li><strong>Stack frame concept</strong></li>
+            <li><strong>Heap memory</strong></li>
+            <li><strong>Garbage collection</strong></li>
+            <li><strong>Return vs print</strong></li>
+            <li><strong>Type casting basics</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 17. Final Revision -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-blue">⚡</div>
+          Final Revision
+        </div>
+
+        <div class="highlight yellow">
+          <strong>👉 Methods = Behavior of objects</strong>
+          <br /><br />👉 4 types: <br />1. No input, no output <br />2. No
+          input, output <br />3. Input, no output <br />4. Input, output (next
+          class)
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

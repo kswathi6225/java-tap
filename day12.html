@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 12</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .sidebar-logo {
+        padding: 0 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--accent2);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        border: 1px solid var(--accent2);
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .sidebar nav a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.1);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 12px 16px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .page-header .day-badge {
+        display: inline-block;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        border: 1px solid rgba(121, 192, 255, 0.3);
+      }
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent4);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        border: 1px solid rgba(227, 179, 65, 0.3);
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-title .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 18px;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+        color: var(--accent4);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .card p {
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.7;
+      }
+      .card strong {
+        color: var(--accent2);
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: rgba(121, 192, 255, 0.1);
+        border-left: 4px solid var(--accent2);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      .highlight.orange {
+        background: rgba(247, 129, 102, 0.1);
+        border-left-color: var(--accent);
+      }
+      .highlight.green {
+        background: rgba(86, 211, 100, 0.1);
+        border-left-color: var(--accent3);
+      }
+      .highlight.yellow {
+        background: rgba(227, 179, 65, 0.1);
+        border-left-color: var(--accent4);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-weight: 600;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .definition .meaning {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent2);
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(121, 192, 255, 0.05);
+      }
+      td strong {
+        color: var(--accent2);
+      }
+
+      /* Code */
+      code {
+        background: var(--surface);
+        color: var(--accent3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        margin-bottom: 16px;
+      }
+      ul.notes li {
+        padding-left: 20px;
+        margin-bottom: 8px;
+        position: relative;
+        color: var(--text);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent2);
+        font-weight: bold;
+        font-size: 16px;
+      }
+      ul.notes li strong {
+        color: var(--accent2);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">📚 TAP ACADEMY</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html" class="active">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">Day 12</div>
+        <h1>Operators & Basics <span>✖️</span></h1>
+        <p class="subtitle">
+          Integer division, type casting, and number systems
+        </p>
+        <div class="tags">
+          <div class="tag">Division</div>
+          <div class="tag">Type Casting</div>
+          <div class="tag">Octal</div>
+          <div class="tag">ASCII</div>
+        </div>
+      </div>
+
+      <!-- 1. Integer Division -->
+      <section class="section" id="division">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Integer Division (VERY IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int a = 25;
+int b = 2;
+int c = a / b;
+System.out.println(c);</pre
+          >
+        </div>
+
+        <div class="highlight yellow"><strong>Output:</strong> 12</div>
+
+        <div class="card">
+          <p><strong>🧠 Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>25 / 2 = 12.5</li>
+            <li><strong>int cannot store decimals</strong></li>
+            <li>Decimal part (0.5) is removed → <strong>truncation</strong></li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          <strong>🔥 KEY RULE:</strong> If both operands are int, result is
+          always int
+        </div>
+      </section>
+
+      <!-- 2. Getting Decimal Output -->
+      <section class="section" id="decimal-output">
+        <div class="section-title">
+          <div class="icon icon-orange">🚀</div>
+          Getting Decimal Output
+        </div>
+
+        <div class="card">
+          <p><strong>❌ Wrong Way:</strong></p>
+          <pre>
+float c = a / b;
+
+// Still output = 12.0</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>❗ WHY?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>a = int</li>
+            <li>b = int</li>
+            <li>Operation happens first → result = int (12)</li>
+            <li>Then stored in float → becomes 12.0</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Correct Way:</strong></p>
+          <pre>
+float c = (float)a / b;
+
+// Output: 12.5</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          <strong>🔥 RULE:</strong> If any one operand is float → result is
+          float
+        </div>
+      </section>
+
+      <!-- 3. Data Type Priority -->
+      <section class="section" id="priority">
+        <div class="section-title">
+          <div class="icon icon-blue">🎯</div>
+          Data Type Priority (IMPORTANT)
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Type</th>
+              <th>Size</th>
+            </tr>
+            <tr>
+              <td>byte</td>
+              <td>1 byte</td>
+            </tr>
+            <tr>
+              <td>short</td>
+              <td>2 bytes</td>
+            </tr>
+            <tr>
+              <td>int</td>
+              <td>4 bytes</td>
+            </tr>
+            <tr>
+              <td>float</td>
+              <td>4 bytes</td>
+            </tr>
+            <tr>
+              <td>double</td>
+              <td>8 bytes</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p>
+            <strong>👉 Rule:</strong> Result always becomes larger data type
+          </p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>int + float → float</li>
+            <li>int + int → int</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Implicit Type Casting -->
+      <section class="section" id="implicit">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Implicit Type Casting
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>float a = 25;</pre>
+        </div>
+
+        <div class="highlight">
+          <strong>👉 No error!</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>int → float (small → big)</li>
+            <li>Automatic conversion</li>
+          </ul>
+        </div>
+
+        <div class="definition">
+          <div class="term">Called:</div>
+          <div class="meaning">Implicit Type Casting</div>
+        </div>
+      </section>
+
+      <!-- 5. Why This Gives Error? -->
+      <section class="section" id="error-case">
+        <div class="section-title">
+          <div class="icon icon-orange">❌</div>
+          Why This Gives Error?
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>float a = 25.0;</pre>
+        </div>
+
+        <div class="highlight orange">
+          <strong>❌ Error!</strong>
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Reason:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>25.0 → double (default)</li>
+            <li>double → float (big → small)</li>
+            <li>Not allowed automatically</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Fix:</strong></p>
+          <pre>float a = 25.0f;</pre>
+        </div>
+      </section>
+
+      <!-- 6. Explicit Type Casting -->
+      <section class="section" id="explicit">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Explicit Type Casting
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>int c = (int)(a / b);</pre>
+        </div>
+
+        <div class="card">
+          <p>
+            <strong>👉 Required when:</strong> Large data type → small data type
+          </p>
+        </div>
+      </section>
+
+      <!-- 7. Arithmetic Operator Rule -->
+      <section class="section" id="arithmetic-rule">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Arithmetic Operator Rule (VERY IMPORTANT)
+        </div>
+
+        <div class="highlight">
+          <strong>👉 When using arithmetic operators:</strong> All smaller types
+          (byte, short) → converted to int
+        </div>
+
+        <div class="card">
+          <p><strong>❗ Example:</strong></p>
+          <pre>
+byte x = 5;
+x = x * 10;  // ❌ ERROR</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Why?</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>x → byte</li>
+            <li>10 → int</li>
+            <li>Result → int</li>
+            <li>int → byte ❌ not allowed</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Fix:</strong></p>
+          <pre>x = (byte)(x * 10);</pre>
+        </div>
+      </section>
+
+      <!-- 8. Another Example -->
+      <section class="section" id="example-2">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Another Example
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+byte b = 6;
+b = b + 8;  // ❌ ERROR</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>🧠 Reason:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>b + 8 → int</li>
+            <li>Cannot store in byte</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Fix:</strong></p>
+          <pre>b = (byte)(b + 8);</pre>
+        </div>
+      </section>
+
+      <!-- 9. Octal Numbers -->
+      <section class="section" id="octal">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Octal Numbers (TRICKY 🔥)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int y = 010;
+System.out.println(y);</pre
+          >
+        </div>
+
+        <div class="highlight yellow"><strong>Output:</strong> 8</div>
+
+        <div class="card">
+          <p>
+            <strong>🧠 Why?</strong> Numbers starting with 0 → octal (base 8)
+          </p>
+          <p style="margin-top: 8px">010 = 8 (decimal)</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <tr>
+              <th>Format</th>
+              <th>Type</th>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>decimal</td>
+            </tr>
+            <tr>
+              <td>010</td>
+              <td>octal</td>
+            </tr>
+            <tr>
+              <td>0b10</td>
+              <td>binary</td>
+            </tr>
+            <tr>
+              <td>0x10</td>
+              <td>hexadecimal</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ VERY IMPORTANT:</strong> Know all number systems!
+        </div>
+      </section>
+
+      <!-- 10. Character to Integer -->
+      <section class="section" id="char-to-int">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Character to Integer
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int ch = 'A';
+System.out.println(ch);</pre
+          >
+        </div>
+
+        <div class="highlight"><strong>Output:</strong> 65</div>
+
+        <div class="card">
+          <p>
+            <strong>🧠 Why?</strong> Java stores characters as ASCII/Unicode
+            values
+          </p>
+        </div>
+      </section>
+
+      <!-- 11. Pre vs Post -->
+      <section class="section" id="pre-post">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Pre vs Post Increment (REVISION)
+        </div>
+
+        <div class="card">
+          <p><strong>Pre Increment:</strong></p>
+          <pre>
+int ch = 'A'; // 65
+System.out.println(++ch); // 66
+System.out.println(ch);   // 66</pre
+          >
+          <ul class="notes" style="margin-top: 12px">
+            <li>First increase</li>
+            <li>Then use</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Post Increment:</strong></p>
+          <pre>
+System.out.println(ch++); // 65
+System.out.println(ch);   // 66</pre
+          >
+          <ul class="notes" style="margin-top: 12px">
+            <li>First use</li>
+            <li>Then increase</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 12. Case Sensitivity -->
+      <section class="section" id="case">
+        <div class="section-title">
+          <div class="icon icon-orange">🔥</div>
+          Case Sensitivity
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>
+int c = 'A';  // 65
+int C = 'a';  // 97</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          <strong>👉 Java is: Case Sensitive</strong>
+        </div>
+      </section>
+
+      <!-- 13. Expression Example -->
+      <section class="section" id="expression">
+        <div class="section-title">
+          <div class="icon icon-blue">🔥</div>
+          Expression Example (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Code:</strong></p>
+          <pre>System.out.println(c++ + ++C);</pre>
+        </div>
+
+        <div class="card">
+          <p><strong>👉 Step:</strong></p>
+          <ul class="notes" style="margin-top: 12px">
+            <li>c++ → 65 (then becomes 66)</li>
+            <li>++C → 98</li>
+          </ul>
+        </div>
+
+        <div class="highlight"><strong>Output:</strong> 163</div>
+      </section>
+
+      <!-- 14. Golden Rules -->
+      <section class="section" id="rules">
+        <div class="section-title">
+          <div class="icon icon-green">🔥</div>
+          Golden Rules (INTERVIEW)
+        </div>
+
+        <div class="card">
+          <ul class="notes">
+            <li><strong>Integer ÷ Integer → Integer</strong></li>
+            <li><strong>Decimal removed → truncation</strong></li>
+            <li><strong>One float → result float</strong></li>
+            <li><strong>Smaller → larger → implicit</strong></li>
+            <li><strong>Larger → smaller → explicit</strong></li>
+            <li><strong>Arithmetic → result at least int</strong></li>
+            <li><strong>Octal starts with 0</strong></li>
+            <li><strong>Char → ASCII value</strong></li>
+            <li><strong>Always solve step-by-step</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 15. Final Revision -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-yellow">⚡</div>
+          Final Revision
+        </div>
+
+        <div class="highlight orange">
+          <strong>👉 Most mistakes happen because:</strong>
+          <br />❌ Not checking data types <br />❌ Ignoring octal <br />❌
+          Forgetting type casting <br />❌ Overconfidence in increment/decrement
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 7</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 20px 80px;
+        }
+        .sidebar {
+          width: 180px;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      pre {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        overflow-x: auto;
+        margin-bottom: 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--accent2);
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html" class="active">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 7</div>
+        <h1>Advanced Pattern &amp; <span>Complex Logic</span></h1>
+        <p class="subtitle">
+          Pattern relationships, multiplication tables, triangles, pyramids, and
+          advanced nested loop logic.
+        </p>
+        <div class="tags">
+          <span class="tag">Patterns</span>
+          <span class="tag">Advanced Logic</span>
+          <span class="tag">Nested Loops</span>
+          <span class="tag">Triangle Patterns</span>
+          <span class="tag">Pyramid Patterns</span>
+          <span class="tag">Problem Solving</span>
+        </div>
+      </div>
+
+      <!-- 1. Quick Recap -->
+      <section class="section" id="recap">
+        <div class="section-title">
+          <div class="icon icon-orange">🔁</div>
+          Quick Recap
+        </div>
+
+        <div class="card">
+          <p><strong>From Day 6:</strong></p>
+          <ul class="notes">
+            <li>Square patterns using nested loops</li>
+            <li><code>i</code> → rows, <code>j</code> → columns</li>
+            <li>
+              <code>print()</code> vs <code>println()</code> makes a difference
+            </li>
+          </ul>
+        </div>
+
+        <div class="highlight">
+          Today we explore more advanced patterns and relationships between i
+          and j
+        </div>
+      </section>
+
+      <!-- 2. Key Concept -->
+      <section class="section" id="key-concept">
+        <div class="section-title">
+          <div class="icon icon-blue">🧠</div>
+          Key Concept – Pattern Logic
+        </div>
+
+        <div class="definition">
+          <div class="term">Pattern Logic</div>
+          <div class="meaning">
+            Every pattern depends on finding the relationship between row index
+            (i) and column index (j).
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>What You Must Do:</strong></p>
+          <ul class="notes">
+            <li>Identify row index → <code>i</code></li>
+            <li>Identify column index → <code>j</code></li>
+            <li>Find relation between <code>i</code> and <code>j</code></li>
+            <li>Convert relation into code</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. Square Star Pattern (Revision) -->
+      <section class="section" id="square-revision">
+        <div class="section-title">
+          <div class="icon icon-green">⭐</div>
+          Square Star Pattern (Revision)
+        </div>
+
+        <div class="card">
+          <p><strong>Basic Square:</strong></p>
+          <pre>
+int n = 5;
+
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= n; j++) {
+        System.out.print("* ");
+    }
+    System.out.println();
+}</pre
+          >
+          <p style="margin-top: 12px">
+            <strong>Output:</strong> 5×5 square of stars
+          </p>
+        </div>
+      </section>
+
+      <!-- 4. Pattern 1: Multiplication Table -->
+      <section class="section" id="multiplication">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔢</div>
+          Pattern 1 – Multiplication Table
+        </div>
+
+        <div class="card">
+          <p><strong>Output:</strong></p>
+          <pre>
+1 2 3 4 5
+2 4 6 8 10
+3 6 9 12 15
+4 8 12 16 20
+5 10 15 20 25</pre
+          >
+        </div>
+
+        <div class="definition">
+          <div class="term">Logic</div>
+          <div class="meaning">
+            Each cell at position (i, j) contains: i × j
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= n; j++) {
+        System.out.print((i * j) + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="highlight orange">
+          <strong>⚠️ Formatting Issue:</strong> Single digits (1-9) and double
+          digits (10+) misalign the pattern
+        </div>
+
+        <div class="card">
+          <p><strong>✅ Solution – Add Leading Zero:</strong></p>
+          <pre>
+if(i * j < 10) {
+    System.out.print("0");
+}
+System.out.print((i * j) + " ");</pre
+          >
+          <p style="margin-top: 12px">
+            This adds a leading zero for alignment:
+            <code>01, 02, 03... 10, 12, 15</code>
+          </p>
+        </div>
+      </section>
+
+      <!-- 5. Pattern 2: i+j-1 Pattern -->
+      <section class="section" id="pattern-i-plus-j">
+        <div class="section-title">
+          <div class="icon icon-blue">🔢</div>
+          Pattern 2 – i + j - 1 Pattern
+        </div>
+
+        <div class="card">
+          <p><strong>Output:</strong></p>
+          <pre>
+1 2 3 4 5
+2 3 4 5 6
+3 4 5 6 7
+4 5 6 7 8
+5 6 7 8 9</pre
+          >
+        </div>
+
+        <div class="definition">
+          <div class="term">Formula</div>
+          <div class="meaning">Value at (i, j) = i + j - 1</div>
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= n; j++) {
+        System.out.print((i + j - 1) + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="highlight green">
+          Core idea: Find relationship between row & column → Convert to code
+        </div>
+      </section>
+
+      <!-- 6. Right-Angled Triangle Pattern -->
+      <section class="section" id="triangle">
+        <div class="section-title">
+          <div class="icon icon-orange">🔺</div>
+          Right-Angled Triangle Pattern
+        </div>
+
+        <div class="card">
+          <p><strong>Output:</strong></p>
+          <pre>
+*
+* *
+* * *
+* * * *
+* * * * *</pre
+          >
+        </div>
+
+        <div class="definition">
+          <div class="term">Key Insight</div>
+          <div class="meaning">
+            Columns depend on rows: j ≤ i (inner loop limit depends on outer
+            loop)
+          </div>
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= i; j++) {
+        System.out.print("* ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="highlight">
+          Important: Inner loop condition changed from <code>j <= n</code> to
+          <code>j <= i</code>
+        </div>
+      </section>
+
+      <!-- 7. Triangle with Numbers (Column-wise) -->
+      <section class="section" id="triangle-numbers-col">
+        <div class="section-title">
+          <div class="icon icon-green">🔢</div>
+          Triangle with Numbers (Column-wise)
+        </div>
+
+        <div class="card">
+          <p><strong>Output (Print j):</strong></p>
+          <pre>
+1
+1 2
+1 2 3
+1 2 3 4
+1 2 3 4 5</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= i; j++) {
+        System.out.print(j + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+      </section>
+
+      <!-- 8. Triangle with Numbers (Row-wise) -->
+      <section class="section" id="triangle-numbers-row">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔢</div>
+          Triangle with Numbers (Row-wise)
+        </div>
+
+        <div class="card">
+          <p><strong>Output (Print i):</strong></p>
+          <pre>
+1
+2 2
+3 3 3
+4 4 4 4
+5 5 5 5 5</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+    for(int j = 1; j <= i; j++) {
+        System.out.print(i + " ");
+    }
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="highlight">
+          Notice: Only <code>i</code> is printed instead of <code>j</code> →
+          Different pattern!
+        </div>
+      </section>
+
+      <!-- 9. Right-Aligned Triangle -->
+      <section class="section" id="right-aligned">
+        <div class="section-title">
+          <div class="icon icon-orange">🔺</div>
+          Right-Aligned Triangle (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Output:</strong></p>
+          <pre>
+        *
+      * *
+    * * *
+  * * * *
+* * * * *</pre
+          >
+        </div>
+
+        <div class="highlight yellow">
+          Key idea: Two things per row → Spaces + Stars
+        </div>
+
+        <div class="definition">
+          <div class="term">Space Formula</div>
+          <div class="meaning">spaces = n - i</div>
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Code:</strong></p>
+          <pre>
+for(int i = 1; i <= n; i++) {
+
+    // Print spaces
+    for(int k = 1; k <= n - i; k++) {
+        System.out.print(" ");
+    }
+
+    // Print stars
+    for(int j = 1; j <= i; j++) {
+        System.out.print("* ");
+    }
+
+    System.out.println();
+}</pre
+          >
+        </div>
+
+        <div class="highlight">
+          <strong>Execution Flow:</strong><br />
+          1. First → Print spaces (n - i)<br />
+          2. Then → Print stars (i times)<br />
+          3. Finally → New line
+        </div>
+      </section>
+
+      <!-- 10. Pyramid Pattern -->
+      <section class="section" id="pyramid">
+        <div class="section-title">
+          <div class="icon icon-blue">🔺</div>
+          Pyramid Pattern (IMPORTANT)
+        </div>
+
+        <div class="card">
+          <p><strong>Output:</strong></p>
+          <pre>
+    *
+   * *
+  * * *
+ * * * *
+* * * * *</pre
+          >
+        </div>
+
+        <div class="card">
+          <p><strong>💻 Trick:</strong></p>
+          <pre>System.out.print("* ");</pre>
+          <p style="margin-top: 12px">
+            <strong>Why this works:</strong> The space after each star
+            automatically creates the pyramid effect when combined with proper
+            spacing before the stars.
+          </p>
+        </div>
+
+        <div class="highlight green">
+          Logic = Combination of spaces for alignment + stars with proper
+          spacing
+        </div>
+      </section>
+
+      <!-- 11. Core Understanding -->
+      <section class="section" id="core">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Core Understanding
+        </div>
+
+        <div class="highlight">
+          <strong>Pattern Programming is NOT about code</strong><br /><br />
+          It is about:
+          <ul class="notes" style="margin-top: 10px">
+            <li>Observing the pattern</li>
+            <li>Finding relationships</li>
+            <li>Converting logic into loops</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 12. Most Important Rules -->
+      <section class="section" id="important-rules">
+        <div class="section-title">
+          <div class="icon icon-yellow">🔥</div>
+          Most Important Rules
+        </div>
+
+        <div class="card">
+          <p><strong>Step 1: Always Draw Grid</strong></p>
+          <p>Convert pattern into rows and columns to understand structure.</p>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 2: Identify Components</strong></p>
+          <ul class="notes">
+            <li>Rows → <code>i</code></li>
+            <li>Columns → <code>j</code></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 3: Find Relationship</strong></p>
+          <ul class="notes">
+            <li><code>i * j</code> (multiplication)</li>
+            <li><code>i + j - 1</code> (addition)</li>
+            <li><code>j <= i</code> (dependent columns)</li>
+            <li><code>n - i</code> (spacing formula)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Step 4: Decide Logic</strong></p>
+          <ul class="notes">
+            <li>What to print (value or symbol)</li>
+            <li>When to print (condition)</li>
+            <li>How many times (loop limit)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 13. Interview Focus -->
+      <section class="section" id="interview-focus">
+        <div class="section-title">
+          <div class="icon icon-orange">🎯</div>
+          Interview Focus
+        </div>
+
+        <div class="card">
+          <p><strong>You MUST Know:</strong></p>
+          <ul class="notes">
+            <li>Nested loops and their execution</li>
+            <li>How to find i-j relationship</li>
+            <li>Space handling in patterns</li>
+            <li>How to approach any pattern problem</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>Common Interview Questions:</strong></p>
+          <ul class="notes">
+            <li>Print triangle patterns</li>
+            <li>Print pyramid patterns</li>
+            <li>Print number patterns (multiplication table)</li>
+            <li>How to add spaces in patterns?</li>
+            <li>Explain the logic behind nested loops</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 14. Final Understanding -->
+      <section class="section" id="final">
+        <div class="section-title">
+          <div class="icon icon-green">🧠</div>
+          Final Simple Understanding
+        </div>
+
+        <div class="highlight green">
+          <strong>Programming = Logic First, Code Second</strong><br /><br />
+          In every row, you either:
+          <ul class="notes" style="margin-top: 10px">
+            <li>Print values only</li>
+            <li>OR print spaces + values</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><strong>🔑 Golden Rule:</strong></p>
+          <pre>Observe → Analyze → Find Relationship → Code</pre>
+          <p style="margin-top: 12px">
+            Don't jump to coding. Understand the pattern first!
+          </p>
+        </div>
+
+        <div class="highlight">
+          <strong>Success Formula:</strong> Understand the grid → Identify rows
+          and columns → Find i-j relationship → Write nested loops
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,2685 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 3</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 16px 60px;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+      td .check {
+        color: var(--accent3);
+        font-weight: 700;
+      }
+      td .cross {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Collapsible */
+      details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      summary {
+        padding: 14px 18px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        user-select: none;
+        list-style: none;
+        transition: background 0.2s;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::before {
+        content: "▶";
+        font-size: 10px;
+        color: var(--accent);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      details[open] summary::before {
+        transform: rotate(90deg);
+      }
+      summary:hover {
+        background: var(--surface2);
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        border-top: 1px solid var(--border);
+        margin-top: -1px;
+      }
+      .details-body ul.notes {
+        margin-top: 12px;
+      }
+
+      /* Diagram / Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0;
+        margin: 16px 0;
+      }
+      .flow-node {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 100px;
+      }
+      .flow-node .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .flow-arrow {
+        color: var(--muted);
+        font-size: 18px;
+        padding: 0 8px;
+        flex-shrink: 0;
+      }
+      .flow-node.blue {
+        border-color: rgba(121, 192, 255, 0.4);
+        color: var(--accent2);
+      }
+      .flow-node.orange {
+        border-color: rgba(247, 129, 102, 0.4);
+        color: var(--accent);
+      }
+      .flow-node.green {
+        border-color: rgba(86, 211, 100, 0.4);
+        color: var(--accent3);
+      }
+      .flow-node.yellow {
+        border-color: rgba(227, 179, 65, 0.4);
+        color: var(--accent4);
+      }
+
+      /* SVG Diagrams */
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      .diagram-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Summary box */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .summary-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        text-align: center;
+      }
+      .summary-card .emoji {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .summary-card .s-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .summary-card .s-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* Badge pill */
+      .pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .pill-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .pill-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .pill-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+      .pill-red {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+
+      /* Interview tips */
+      .interview-tip {
+        background: rgba(227, 179, 65, 0.07);
+        border: 1px solid rgba(227, 179, 65, 0.25);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .interview-tip .tip-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent4);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Versus card */
+      .vs-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .vs-label {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--muted);
+        text-align: center;
+      }
+      .vs-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+      }
+      .vs-card.dep {
+        border-top: 3px solid var(--accent);
+      }
+      .vs-card.indep {
+        border-top: 3px solid var(--accent3);
+      }
+      .vs-card .vs-title {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+      }
+      .vs-card.dep .vs-title {
+        color: var(--accent);
+      }
+      .vs-card.indep .vs-title {
+        color: var(--accent3);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html" class="active">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="day-badge">✦ Day 3</div>
+        <h1>Java Introduction &amp; <span>Platform Independence</span></h1>
+        <p class="subtitle">
+          Revision of programming fundamentals, language levels, memory
+          concepts, and deep-dive into how Java achieves platform independence
+          via JVM &amp; Bytecode.
+        </p>
+        <div class="tags">
+          <span class="tag">Java</span>
+          <span class="tag">JVM</span>
+          <span class="tag">Bytecode</span>
+          <span class="tag">Platform Independent</span>
+          <span class="tag">Compiler</span>
+          <span class="tag">Assembler</span>
+          <span class="tag">RAM</span>
+          <span class="tag">Hard Disk</span>
+          <span class="tag">OOP</span>
+        </div>
+      </div>
+
+      <!-- 1. Revision -->
+      <section class="section" id="revision">
+        <div class="section-title">
+          <div class="icon icon-blue">🔁</div>
+          Revision of Previous Classes
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">✅ Day 1</div>
+            <ul class="notes">
+              <li>
+                <strong>Course Introduction</strong> — scope, roadmap, placement
+                overview
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">✅ Day 2</div>
+            <ul class="notes">
+              <li><strong>Introduction to Programming</strong></li>
+              <li>Types of Programming Languages</li>
+              <li>Conversion Tools — Assembler &amp; Compiler</li>
+              <li>Computer Components — CPU, RAM, Hard Disk</li>
+            </ul>
+          </div>
+        </div>
+
+        <details open>
+          <summary>📋 Quick Recap — Types of Languages</summary>
+          <div class="details-body">
+            <div class="table-wrap" style="margin-top: 12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Language Type</th>
+                    <th>Example</th>
+                    <th>Converter Tool</th>
+                    <th>Readable By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Machine Level</strong></td>
+                    <td><code>0s &amp; 1s</code></td>
+                    <td>— (none needed)</td>
+                    <td>Microprocessor directly</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Assembly</strong></td>
+                    <td><code>ADD, SUB</code></td>
+                    <td>Assembler</td>
+                    <td>Low-level programmers</td>
+                  </tr>
+                  <tr>
+                    <td><strong>High-Level</strong></td>
+                    <td><code>Java, C, Python</code></td>
+                    <td>Compiler</td>
+                    <td>Humans easily</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 2. What is Programming -->
+      <section class="section" id="programming">
+        <div class="section-title">
+          <div class="icon icon-orange">💡</div>
+          What is Programming?
+        </div>
+
+        <div class="definition">
+          <div class="term">Programming (Coding)</div>
+          <div class="meaning">
+            A <strong>set of instructions</strong> given to a computer
+            (microprocessor) to perform a specific task. The person who writes
+            programs is called a <strong>Programmer / Coder</strong>.
+          </div>
+        </div>
+
+        <div class="highlight orange">
+          👉 Every app, website, or software you use is just a collection of
+          instructions written by a programmer.
+        </div>
+      </section>
+
+      <!-- 3. Language Levels -->
+      <section class="section" id="languages">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧠</div>
+          Language Levels — Deep Dive
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">🔹 Machine Level</div>
+            <ul class="notes">
+              <li>Written in <strong>0s and 1s</strong></li>
+              <li>Directly understood by microprocessor</li>
+              <li>No conversion tool needed</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🔹 Assembly Level</div>
+            <ul class="notes">
+              <li>Uses mnemonics: <code>ADD</code>, <code>SUB</code></li>
+              <li>Converted by <strong>Assembler</strong></li>
+              <li>Still hardware-close</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">🔹 High-Level</div>
+            <ul class="notes">
+              <li>
+                Human-readable: <code>Java</code>, <code>Python</code>,
+                <code>C++</code>
+              </li>
+              <li>Converted by <strong>Compiler</strong></li>
+              <li>Most widely used today</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Assembler vs Compiler definitions -->
+        <div class="grid-2">
+          <div class="definition">
+            <div class="term">Assembler</div>
+            <div class="meaning">
+              Software that converts
+              <strong>Assembly Language → Machine Language</strong>
+            </div>
+          </div>
+          <div class="definition">
+            <div class="term">Compiler</div>
+            <div class="meaning">
+              Software that converts
+              <strong>High-Level Language → Machine Language</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="700"
+            height="80"
+            viewBox="0 0 700 80"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Assembly flow -->
+            <rect
+              x="10"
+              y="20"
+              width="140"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="80"
+              y="37"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Assembly Code
+            </text>
+            <text
+              x="80"
+              y="53"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              ADD, SUB
+            </text>
+            <text
+              x="175"
+              y="44"
+              fill="#8b949e"
+              font-size="18"
+              text-anchor="middle"
+            >
+              →
+            </text>
+            <rect
+              x="190"
+              y="20"
+              width="110"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+            />
+            <text
+              x="245"
+              y="37"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Assembler
+            </text>
+            <text
+              x="245"
+              y="53"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              converts
+            </text>
+            <text
+              x="325"
+              y="44"
+              fill="#8b949e"
+              font-size="18"
+              text-anchor="middle"
+            >
+              →
+            </text>
+            <!-- Compiler flow -->
+            <rect
+              x="370"
+              y="20"
+              width="140"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="440"
+              y="37"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              High-Level Code
+            </text>
+            <text
+              x="440"
+              y="53"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Java, C, Python
+            </text>
+            <text
+              x="533"
+              y="44"
+              fill="#8b949e"
+              font-size="18"
+              text-anchor="middle"
+            >
+              →
+            </text>
+            <rect
+              x="548"
+              y="20"
+              width="110"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+            />
+            <text
+              x="603"
+              y="37"
+              fill="#56d364"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Compiler
+            </text>
+            <text
+              x="603"
+              y="53"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              converts
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 4. Memory Concepts -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-green">💾</div>
+          Memory Concepts
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Type</th>
+                <th>Feature</th>
+                <th>Data Called</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>RAM</strong></td>
+                <td>Semiconductor</td>
+                <td>
+                  Fast, <span class="cross">Volatile</span> (lost on shutdown)
+                </td>
+                <td><code>Byte</code></td>
+              </tr>
+              <tr>
+                <td><strong>Hard Disk</strong></td>
+                <td>Magnetic</td>
+                <td>Slow, <span class="check">Permanent</span></td>
+                <td><code>File</code></td>
+              </tr>
+              <tr>
+                <td><strong>Microprocessor (CPU)</strong></td>
+                <td>Semiconductor</td>
+                <td>Executes instructions</td>
+                <td><code>Register</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight green">
+          <strong>🔁 Data Flow:</strong> Typing → stored in
+          <strong>RAM</strong> &nbsp;|&nbsp; Saving → RAM →
+          <strong>Hard Disk</strong> &nbsp;|&nbsp; Loading → Hard Disk →
+          <strong>RAM</strong>
+        </div>
+
+        <!-- Data flow diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="660"
+            height="100"
+            viewBox="0 0 660 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <rect
+              x="10"
+              y="30"
+              width="120"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+            />
+            <text
+              x="70"
+              y="48"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Keyboard
+            </text>
+            <text
+              x="70"
+              y="63"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              User Input
+            </text>
+            <polygon points="140,50 158,42 158,58" fill="#8b949e" />
+            <line
+              x1="140"
+              y1="50"
+              x2="158"
+              y2="50"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <rect
+              x="160"
+              y="30"
+              width="120"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.4)"
+            />
+            <text
+              x="220"
+              y="48"
+              fill="#e3b341"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              RAM
+            </text>
+            <text
+              x="220"
+              y="63"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Temporary
+            </text>
+
+            <!-- bidirectional RAM ↔ HDD -->
+            <line
+              x1="280"
+              y1="46"
+              x2="310"
+              y2="46"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+            <polygon points="310,46 298,40 298,52" fill="#8b949e" />
+            <line
+              x1="280"
+              y1="54"
+              x2="310"
+              y2="54"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+            <polygon points="280,54 292,48 292,60" fill="#8b949e" />
+
+            <rect
+              x="310"
+              y="30"
+              width="120"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+            />
+            <text
+              x="370"
+              y="48"
+              fill="#56d364"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Hard Disk
+            </text>
+            <text
+              x="370"
+              y="63"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Permanent
+            </text>
+
+            <polygon points="440,50 458,42 458,58" fill="#8b949e" />
+            <line
+              x1="440"
+              y1="50"
+              x2="458"
+              y2="50"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <rect
+              x="460"
+              y="30"
+              width="120"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+            />
+            <text
+              x="520"
+              y="48"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              CPU
+            </text>
+            <text
+              x="520"
+              y="63"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Executes
+            </text>
+
+            <polygon points="590,50 608,42 608,58" fill="#8b949e" />
+            <line
+              x1="590"
+              y1="50"
+              x2="608"
+              y2="50"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <rect
+              x="610"
+              y="30"
+              width="42"
+              height="40"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="631"
+              y="55"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+              text-anchor="middle"
+            >
+              Output
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 5. Introduction to Java -->
+      <section class="section" id="java-intro">
+        <div class="section-title">
+          <div class="icon icon-orange">☕</div>
+          Introduction to Java
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">📅 Founded</div>
+            <p style="font-size: 22px; font-weight: 800; color: var(--accent2)">
+              1995
+            </p>
+            <p>30+ years of industry dominance</p>
+          </div>
+          <div class="card">
+            <div class="card-title">👨‍💻 Creator</div>
+            <p style="font-size: 18px; font-weight: 700; color: var(--text)">
+              James Gosling
+            </p>
+            <p>"Father of Java"</p>
+          </div>
+          <div class="card">
+            <div class="card-title">🏢 Organization</div>
+            <p style="font-size: 16px; font-weight: 700; color: var(--text)">
+              Sun Microsystems
+            </p>
+            <p>Later acquired by Oracle</p>
+          </div>
+        </div>
+
+        <div class="highlight">
+          ☕ Java has been one of the
+          <strong>top 3 most popular programming languages</strong> for over 30
+          years — and remains a core skill for backend and enterprise
+          development.
+        </div>
+      </section>
+
+      <!-- 6. Features of Java -->
+      <section class="section" id="features">
+        <div class="section-title">
+          <div class="icon icon-blue">⭐</div>
+          Features of Java
+        </div>
+
+        <div class="diagram-wrap">
+          <svg
+            width="680"
+            height="300"
+            viewBox="0 0 680 300"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Center node -->
+            <rect
+              x="265"
+              y="120"
+              width="150"
+              height="50"
+              rx="10"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.6)"
+              stroke-width="2"
+            />
+            <text
+              x="340"
+              y="141"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Java
+            </text>
+            <text
+              x="340"
+              y="158"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+              text-anchor="middle"
+            >
+              Features
+            </text>
+
+            <!-- Feature nodes -->
+            <!-- Row 1 -->
+            <rect
+              x="10"
+              y="10"
+              width="120"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+            />
+            <text
+              x="70"
+              y="33"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Object-Oriented
+            </text>
+            <line
+              x1="130"
+              y1="28"
+              x2="265"
+              y2="130"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="155"
+              y="10"
+              width="90"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="200"
+              y="33"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Simple
+            </text>
+            <line
+              x1="200"
+              y1="46"
+              x2="290"
+              y2="120"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="265"
+              y="10"
+              width="90"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="310"
+              y="33"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Secure
+            </text>
+            <line
+              x1="310"
+              y1="46"
+              x2="320"
+              y2="120"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="375"
+              y="10"
+              width="140"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="445"
+              y="33"
+              fill="#f78166"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Platform Indep. ⭐
+            </text>
+            <line
+              x1="445"
+              y1="46"
+              x2="390"
+              y2="120"
+              stroke="rgba(247,129,102,0.4)"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="535"
+              y="10"
+              width="90"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="580"
+              y="33"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Robust
+            </text>
+            <line
+              x1="580"
+              y1="46"
+              x2="415"
+              y2="120"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <!-- Row 2 -->
+            <rect
+              x="10"
+              y="110"
+              width="90"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="55"
+              y="133"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Portable
+            </text>
+            <line
+              x1="100"
+              y1="128"
+              x2="265"
+              y2="140"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="535"
+              y="110"
+              width="130"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="600"
+              y="133"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Arch. Neutral
+            </text>
+            <line
+              x1="535"
+              y1="128"
+              x2="415"
+              y2="140"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <!-- Row 3 -->
+            <rect
+              x="10"
+              y="220"
+              width="90"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="55"
+              y="243"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Dynamic
+            </text>
+            <line
+              x1="100"
+              y1="238"
+              x2="265"
+              y2="158"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="155"
+              y="248"
+              width="100"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="205"
+              y="271"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Interpreted
+            </text>
+            <line
+              x1="255"
+              y1="248"
+              x2="320"
+              y2="170"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="270"
+              y="248"
+              width="140"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="340"
+              y="271"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              High Performance
+            </text>
+            <line
+              x1="340"
+              y1="248"
+              x2="340"
+              y2="170"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="425"
+              y="248"
+              width="120"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="485"
+              y="271"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Multi-threaded
+            </text>
+            <line
+              x1="485"
+              y1="248"
+              x2="390"
+              y2="170"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+
+            <rect
+              x="560"
+              y="220"
+              width="110"
+              height="36"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.35)"
+            />
+            <text
+              x="615"
+              y="243"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Distributed
+            </text>
+            <line
+              x1="560"
+              y1="238"
+              x2="415"
+              y2="158"
+              stroke="#30363d"
+              stroke-width="1"
+              stroke-dasharray="4"
+            />
+          </svg>
+        </div>
+
+        <div class="highlight orange">
+          🎯 <strong>Today's Focus:</strong>
+          <strong>Platform Independence</strong> — the most important and
+          most-asked feature in Java interviews.
+        </div>
+      </section>
+
+      <!-- 7. What is Platform -->
+      <section class="section" id="platform">
+        <div class="section-title">
+          <div class="icon icon-yellow">🧩</div>
+          What is a Platform?
+        </div>
+
+        <div class="definition">
+          <div class="term">Platform</div>
+          <div class="meaning">
+            <strong>Platform = Hardware + Software</strong><br />
+            Hardware → Microprocessor &nbsp;|&nbsp; Software → Operating System
+            (OS)
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">🖥️ Example 1</div>
+            <p><strong>Intel</strong> + <strong>Windows</strong></p>
+            <p>Most common consumer setup</p>
+          </div>
+          <div class="card">
+            <div class="card-title">🍎 Example 2</div>
+            <p><strong>Apple M-Series</strong> + <strong>macOS</strong></p>
+            <p>Apple Silicon ecosystem</p>
+          </div>
+          <div class="card">
+            <div class="card-title">⚙️ Example 3</div>
+            <p><strong>AMD</strong> + <strong>Unix</strong></p>
+            <p>Enterprise / server setup</p>
+          </div>
+        </div>
+
+        <div class="highlight yellow">
+          👉 <strong>Practically:</strong> Platform = Operating System (OS).
+          When programmers say "different platform", they usually mean different
+          OS.
+        </div>
+      </section>
+
+      <!-- 8. Platform Dependent -->
+      <section class="section" id="dependent">
+        <div class="section-title">
+          <div class="icon icon-orange">🔗</div>
+          Platform Dependent Languages — C &amp; C++
+        </div>
+
+        <div class="highlight orange">
+          In C/C++, the
+          <strong>compilation platform must equal the execution platform</strong
+          >. If they differ → the program fails.
+        </div>
+
+        <!-- Execution flow -->
+        <div class="flow" style="margin-bottom: 20px">
+          <div class="flow-node blue">
+            High-Level Code
+            <div class="label">C / C++ source</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node orange">
+            Compiler
+            <div class="label">Phase 1: Compile</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node yellow">
+            Machine Code
+            <div class="label">OS-specific binary</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node green">
+            CPU → Output
+            <div class="label">Phase 2: Execute</div>
+          </div>
+        </div>
+
+        <!-- Platform dependency table -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Compile On</th>
+                <th>Run On</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Windows</strong></td>
+                <td><strong>Windows</strong></td>
+                <td><span class="check">✅ Works</span></td>
+              </tr>
+              <tr>
+                <td><strong>Windows</strong></td>
+                <td><strong>Unix</strong></td>
+                <td><span class="cross">❌ Error — Platform mismatch</span></td>
+              </tr>
+              <tr>
+                <td><strong>Windows</strong></td>
+                <td><strong>Mac</strong></td>
+                <td><span class="cross">❌ Error — Platform mismatch</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <details>
+          <summary>⚠️ Why is Platform Dependency a Problem?</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>Code works <strong>only on one OS</strong></li>
+              <li>Cannot run on other operating systems</li>
+              <li>Limits the users who can access your app</li>
+              <li>
+                Example: Only Windows users can use your software — Mac &amp;
+                Unix users ❌ cannot
+              </li>
+              <li>Result: <strong>Huge loss of users &amp; revenue</strong></li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <!-- 9. IT Evolution -->
+      <section class="section" id="history">
+        <div class="section-title">
+          <div class="icon icon-blue">🌍</div>
+          IT Industry Evolution
+        </div>
+
+        <!-- Timeline diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="660"
+            height="100"
+            viewBox="0 0 660 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Line -->
+            <line
+              x1="60"
+              y1="50"
+              x2="600"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+            />
+            <!-- Dots -->
+            <circle
+              cx="150"
+              cy="50"
+              r="10"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.6)"
+              stroke-width="2"
+            />
+            <circle
+              cx="380"
+              cy="50"
+              r="10"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.6)"
+              stroke-width="2"
+            />
+            <circle
+              cx="550"
+              cy="50"
+              r="14"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.8)"
+              stroke-width="2"
+            />
+            <!-- Labels top -->
+            <text
+              x="150"
+              y="32"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              1970s
+            </text>
+            <text
+              x="380"
+              y="32"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              1980s
+            </text>
+            <text
+              x="550"
+              y="28"
+              fill="#56d364"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              1995
+            </text>
+            <!-- Labels bottom -->
+            <text
+              x="150"
+              y="78"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+            >
+              C Language
+            </text>
+            <text
+              x="380"
+              y="78"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+            >
+              C++ Language
+            </text>
+            <text
+              x="550"
+              y="78"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              ☕ Java Born
+            </text>
+          </svg>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🌐 Global IT Hub</div>
+            <p>
+              <strong>California, USA</strong> — Silicon Valley, global HQ for
+              big tech
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">🇮🇳 India IT Hub</div>
+            <p>
+              <strong>Bangalore</strong> — India's Silicon Valley, massive tech
+              workforce
+            </p>
+          </div>
+        </div>
+
+        <div class="highlight">
+          🔐 <strong>Why not upload high-level source code?</strong> Humans can
+          read it — hackers can steal it. Solution: upload
+          <strong>machine code</strong> (not human-readable, hence safe).
+        </div>
+      </section>
+
+      <!-- 10. Java Solution -->
+      <section class="section" id="java-solution">
+        <div class="section-title">
+          <div class="icon icon-green">☕</div>
+          Java's Solution — Platform Independence
+        </div>
+
+        <div class="highlight green">
+          Java does NOT compile to machine code directly. Instead it compiles to
+          <strong>Bytecode</strong> — an intermediate, OS-neutral format
+          understood by the JVM on any platform.
+        </div>
+
+        <!-- Java Execution Flow Diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="680"
+            height="160"
+            viewBox="0 0 680 160"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Step 1 -->
+            <rect
+              x="10"
+              y="55"
+              width="120"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="70"
+              y="76"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Java Code
+            </text>
+            <text
+              x="70"
+              y="93"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              .java file
+            </text>
+            <text
+              x="70"
+              y="22"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Step 1
+            </text>
+
+            <polygon points="140,80 160,72 160,88" fill="#8b949e" />
+            <line
+              x1="130"
+              y1="80"
+              x2="160"
+              y2="80"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <!-- Step 2 -->
+            <rect
+              x="160"
+              y="55"
+              width="130"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="225"
+              y="76"
+              fill="#e3b341"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Java Compiler
+            </text>
+            <text
+              x="225"
+              y="93"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              javac
+            </text>
+            <text
+              x="225"
+              y="22"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Step 2
+            </text>
+
+            <polygon points="300,80 320,72 320,88" fill="#8b949e" />
+            <line
+              x1="290"
+              y1="80"
+              x2="320"
+              y2="80"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <!-- Step 3 — Bytecode (special) -->
+            <rect
+              x="320"
+              y="45"
+              width="130"
+              height="70"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.7)"
+              stroke-width="2"
+            />
+            <text
+              x="385"
+              y="72"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Bytecode
+            </text>
+            <text
+              x="385"
+              y="89"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              .class file
+            </text>
+            <text
+              x="385"
+              y="106"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Intermediate
+            </text>
+            <text
+              x="385"
+              y="22"
+              fill="#f78166"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              ★ KEY OUTPUT
+            </text>
+
+            <polygon points="460,80 480,72 480,88" fill="#8b949e" />
+            <line
+              x1="450"
+              y1="80"
+              x2="480"
+              y2="80"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <!-- Step 4 — JVM -->
+            <rect
+              x="480"
+              y="55"
+              width="80"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="520"
+              y="76"
+              fill="#56d364"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              JVM
+            </text>
+            <text
+              x="520"
+              y="93"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              interprets
+            </text>
+            <text
+              x="520"
+              y="22"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Step 3
+            </text>
+
+            <polygon points="570,80 590,72 590,88" fill="#8b949e" />
+            <line
+              x1="560"
+              y1="80"
+              x2="590"
+              y2="80"
+              stroke="#8b949e"
+              stroke-width="2"
+            />
+
+            <!-- Step 5 Output -->
+            <rect
+              x="590"
+              y="55"
+              width="80"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="#30363d"
+            />
+            <text
+              x="630"
+              y="76"
+              fill="#e6edf3"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Output
+            </text>
+            <text
+              x="630"
+              y="93"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              CPU runs it
+            </text>
+            <text
+              x="630"
+              y="22"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Step 4
+            </text>
+
+            <!-- Label bottom -->
+            <text
+              x="340"
+              y="145"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+              text-anchor="middle"
+            >
+              Java Compiler → Bytecode (NOT Machine Code) → JVM → Machine Code →
+              Output
+            </text>
+          </svg>
+        </div>
+
+        <div class="highlight orange">
+          🧠 <strong>Most Important Concept:</strong> Java Compiler does
+          <strong>NOT</strong> generate Machine Code — it generates
+          <strong>Bytecode</strong> (Intermediate Code). This is what makes Java
+          platform independent.
+        </div>
+      </section>
+
+      <!-- 11. JVM -->
+      <section class="section" id="jvm">
+        <div class="section-title">
+          <div class="icon icon-blue">⚙️</div>
+          What is JVM?
+        </div>
+
+        <div class="definition">
+          <div class="term">JVM — Java Virtual Machine</div>
+          <div class="meaning">
+            Software that converts <strong>Bytecode → Machine Code</strong> at
+            runtime. JVM is what makes Java run on any platform — it acts as a
+            translator between Bytecode and the underlying OS/hardware.
+          </div>
+        </div>
+
+        <!-- JVM per OS diagram -->
+        <div class="diagram-wrap">
+          <svg
+            width="680"
+            height="180"
+            viewBox="0 0 680 180"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <!-- Bytecode top center -->
+            <rect
+              x="265"
+              y="8"
+              width="150"
+              height="44"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.6)"
+              stroke-width="2"
+            />
+            <text
+              x="340"
+              y="27"
+              fill="#f78166"
+              font-family="JetBrains Mono,monospace"
+              font-size="13"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Bytecode
+            </text>
+            <text
+              x="340"
+              y="44"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Same .class file
+            </text>
+
+            <!-- Lines to each JVM -->
+            <line
+              x1="290"
+              y1="52"
+              x2="120"
+              y2="100"
+              stroke="#30363d"
+              stroke-width="1.5"
+              stroke-dasharray="5"
+            />
+            <line
+              x1="340"
+              y1="52"
+              x2="340"
+              y2="100"
+              stroke="#30363d"
+              stroke-width="1.5"
+              stroke-dasharray="5"
+            />
+            <line
+              x1="390"
+              y1="52"
+              x2="560"
+              y2="100"
+              stroke="#30363d"
+              stroke-width="1.5"
+              stroke-dasharray="5"
+            />
+
+            <!-- Windows JVM -->
+            <rect
+              x="20"
+              y="100"
+              width="200"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="120"
+              y="121"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Windows JVM
+            </text>
+            <text
+              x="120"
+              y="139"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Platform Dependent
+            </text>
+
+            <!-- Mac JVM -->
+            <rect
+              x="240"
+              y="100"
+              width="200"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="340"
+              y="121"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Mac JVM
+            </text>
+            <text
+              x="340"
+              y="139"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Platform Dependent
+            </text>
+
+            <!-- Unix JVM -->
+            <rect
+              x="460"
+              y="100"
+              width="200"
+              height="50"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.5)"
+              stroke-width="2"
+            />
+            <text
+              x="560"
+              y="121"
+              fill="#79c0ff"
+              font-family="JetBrains Mono,monospace"
+              font-size="12"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              Unix JVM
+            </text>
+            <text
+              x="560"
+              y="139"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="10"
+              text-anchor="middle"
+            >
+              Platform Dependent
+            </text>
+
+            <!-- Note -->
+            <text
+              x="340"
+              y="170"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="11"
+              text-anchor="middle"
+              font-weight="600"
+            >
+              Same Bytecode runs everywhere — each OS has its own JVM installed
+            </text>
+          </svg>
+        </div>
+
+        <!-- Key interview alert -->
+        <div class="vs-grid">
+          <div class="vs-card dep">
+            <div class="vs-title">❌ JVM — Platform Dependent</div>
+            <ul class="notes">
+              <li>Different JVM for Windows, Mac, Unix</li>
+              <li>JVM must be separately installed per OS</li>
+              <li>JVM itself is OS-specific</li>
+            </ul>
+          </div>
+          <div class="vs-label">VS</div>
+          <div class="vs-card indep">
+            <div class="vs-title">✅ Java — Platform Independent</div>
+            <ul class="notes">
+              <li>Write code once, run anywhere</li>
+              <li>Same Bytecode on all OS</li>
+              <li>JVM handles the OS difference</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight yellow">
+          ⚠️ <strong>Key Interview Point:</strong> Java is
+          <strong>Platform Independent</strong> but JVM is
+          <strong>Platform Dependent</strong>. These are two different things —
+          don't confuse them!
+        </div>
+      </section>
+
+      <!-- 12. Final Understanding -->
+      <section class="section" id="comparison">
+        <div class="section-title">
+          <div class="icon icon-green">🚀</div>
+          C/C++ vs Java — Final Comparison
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Aspect</th>
+                <th>C / C++ (Platform Dependent)</th>
+                <th>Java (Platform Independent)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Compiler Output</strong></td>
+                <td>Machine Code (OS-specific)</td>
+                <td>Bytecode (OS-neutral)</td>
+              </tr>
+              <tr>
+                <td><strong>Compile Once, Run Anywhere</strong></td>
+                <td><span class="cross">❌ No</span></td>
+                <td><span class="check">✅ Yes (with JVM)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Same OS Required?</strong></td>
+                <td><span class="cross">❌ Yes — must match</span></td>
+                <td><span class="check">✅ Not needed</span></td>
+              </tr>
+              <tr>
+                <td><strong>Intermediate Layer</strong></td>
+                <td>None</td>
+                <td>JVM (Java Virtual Machine)</td>
+              </tr>
+              <tr>
+                <td><strong>File After Compile</strong></td>
+                <td><code>.exe</code> / <code>.out</code></td>
+                <td><code>.class</code> (Bytecode)</td>
+              </tr>
+              <tr>
+                <td><strong>Popular Since</strong></td>
+                <td>1970s / 1980s</td>
+                <td>1995 — present</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 13. Interview Questions -->
+      <section class="section" id="interview">
+        <div class="section-title">
+          <div class="icon icon-yellow">📢</div>
+          Interview Questions — Very Important
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is programming?</div>
+          Programming is a <strong>set of instructions</strong> given to a
+          computer (microprocessor) to perform a task. The person who writes it
+          is called a <strong>Programmer / Coder</strong>.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">
+            Q: Difference between Compiler and Assembler?
+          </div>
+          <strong>Assembler</strong> converts Assembly Language → Machine
+          Language.<br />
+          <strong>Compiler</strong> converts High-Level Language → Machine
+          Language.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is a Platform?</div>
+          Platform = <strong>Hardware + Software</strong> (Microprocessor + OS).
+          Practically, Platform = <strong>Operating System</strong>.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is a Platform Dependent Language?</div>
+          A language where the
+          <strong>compilation platform must equal the execution platform</strong
+          >. If platforms mismatch, the program fails. Examples: C, C++.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: Why is Java Platform Independent?</div>
+          Java compiles to <strong>Bytecode</strong> (not machine code).
+          Bytecode is OS-neutral and can run on any OS that has a
+          <strong>JVM</strong> installed. This is why Java follows "Write Once,
+          Run Anywhere."
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is JVM?</div>
+          JVM (Java Virtual Machine) is software that converts
+          <strong>Bytecode → Machine Code</strong> at runtime. It makes Java
+          programs executable on any OS.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">
+            Q: Java is platform independent but JVM is platform dependent —
+            explain.
+          </div>
+          The same <strong>Bytecode (.class file)</strong> can run on any OS —
+          this makes Java platform independent. However, each OS requires its
+          own separate <strong>JVM installation</strong> (Windows JVM, Mac JVM,
+          Unix JVM) — this makes JVM platform dependent.
+        </div>
+      </section>
+
+      <!-- Summary -->
+      <section class="section" id="summary">
+        <div class="section-title">
+          <div class="icon icon-green">✅</div>
+          Day 3 Summary
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="emoji">💡</div>
+            <div class="s-title">Programming</div>
+            <div class="s-sub">
+              Set of instructions to make computer perform a task
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔹</div>
+            <div class="s-title">Language Levels</div>
+            <div class="s-sub">Machine → Assembly → High-Level</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔧</div>
+            <div class="s-title">Assembler</div>
+            <div class="s-sub">Assembly → Machine Language</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">⚙️</div>
+            <div class="s-title">Compiler</div>
+            <div class="s-sub">High-Level → Machine Language</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🧩</div>
+            <div class="s-title">Platform</div>
+            <div class="s-sub">Hardware + OS (practically = OS)</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔗</div>
+            <div class="s-title">C/C++</div>
+            <div class="s-sub">Platform Dependent — compile = run OS</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">☕</div>
+            <div class="s-title">Java (1995)</div>
+            <div class="s-sub">Platform Independent via Bytecode + JVM</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">📄</div>
+            <div class="s-title">Bytecode</div>
+            <div class="s-sub">Intermediate code — OS-neutral .class file</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🖥️</div>
+            <div class="s-title">JVM</div>
+            <div class="s-sub">Platform Dependent — one per OS</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🌍</div>
+            <div class="s-title">WORA</div>
+            <div class="s-sub">Write Once, Run Anywhere</div>
+          </div>
+        </div>
+
+        <div class="highlight green" style="margin-top: 24px">
+          🏆 <strong>Key Takeaway:</strong> Java = Platform Independent
+          &nbsp;|&nbsp; JVM = Platform Dependent &nbsp;|&nbsp; Bytecode is the
+          magic middle-layer.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

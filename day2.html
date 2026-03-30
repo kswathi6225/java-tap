@@ -1,0 +1,2105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Notes - Day 2</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1c2330;
+        --border: #30363d;
+        --accent: #f78166;
+        --accent2: #79c0ff;
+        --accent3: #56d364;
+        --accent4: #e3b341;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --tag-bg: #1f2d3d;
+        --radius: 10px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Sora", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        overflow-y: auto;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
+      }
+      .sidebar-logo .course-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(247, 129, 102, 0.12);
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        color: var(--accent2);
+        background: rgba(121, 192, 255, 0.07);
+        border-left-color: var(--accent2);
+      }
+      .sidebar nav .day-label {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 12px 20px 4px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 0 40px 80px;
+        max-width: 960px;
+      }
+
+      /* Header */
+      .page-header {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+        position: relative;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        margin-bottom: 18px;
+        letter-spacing: 0.5px;
+        transition: color 0.2s;
+      }
+      .back-link:hover {
+        color: var(--accent2);
+      }
+      .page-header .day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(86, 211, 100, 0.12);
+        color: var(--accent3);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(86, 211, 100, 0.25);
+        margin-bottom: 14px;
+      }
+      .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      .page-header h1 span {
+        color: var(--accent2);
+      }
+      .page-header .subtitle {
+        color: var(--muted);
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .tag {
+        background: var(--tag-bg);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(121, 192, 255, 0.2);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Section headings */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-title .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .icon-blue {
+        background: rgba(121, 192, 255, 0.15);
+      }
+      .icon-orange {
+        background: rgba(247, 129, 102, 0.15);
+      }
+      .icon-green {
+        background: rgba(86, 211, 100, 0.15);
+      }
+      .icon-yellow {
+        background: rgba(227, 179, 65, 0.15);
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      .card strong {
+        color: var(--text);
+      }
+
+      /* Highlight box */
+      .highlight {
+        border-left: 3px solid var(--accent2);
+        background: rgba(121, 192, 255, 0.06);
+        padding: 14px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .highlight.orange {
+        border-color: var(--accent);
+        background: rgba(247, 129, 102, 0.06);
+      }
+      .highlight.green {
+        border-color: var(--accent3);
+        background: rgba(86, 211, 100, 0.06);
+      }
+      .highlight.yellow {
+        border-color: var(--accent4);
+        background: rgba(227, 179, 65, 0.06);
+      }
+
+      /* Definition */
+      .definition {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .definition .term {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .definition .meaning {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      /* Grid */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          margin-left: 0;
+          padding: 0 16px 60px;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 16px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      td strong {
+        color: var(--text);
+      }
+
+      /* Code */
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(121, 192, 255, 0.1);
+        color: var(--accent2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      /* Bullet list */
+      ul.notes {
+        list-style: none;
+        padding: 0;
+      }
+      ul.notes li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      ul.notes li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      ul.notes li strong {
+        color: var(--text);
+      }
+
+      /* Collapsible */
+      details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      summary {
+        padding: 14px 18px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        user-select: none;
+        list-style: none;
+        transition: background 0.2s;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::before {
+        content: "▶";
+        font-size: 10px;
+        color: var(--accent);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      details[open] summary::before {
+        transform: rotate(90deg);
+      }
+      summary:hover {
+        background: var(--surface2);
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        border-top: 1px solid var(--border);
+        margin-top: -1px;
+      }
+      .details-body ul.notes {
+        margin-top: 12px;
+      }
+
+      /* Diagram / Flow */
+      .flow {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0;
+        margin: 16px 0;
+      }
+      .flow-node {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 100px;
+      }
+      .flow-node .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .flow-arrow {
+        color: var(--muted);
+        font-size: 18px;
+        padding: 0 8px;
+        flex-shrink: 0;
+      }
+      .flow-node.blue {
+        border-color: rgba(121, 192, 255, 0.4);
+        color: var(--accent2);
+      }
+      .flow-node.orange {
+        border-color: rgba(247, 129, 102, 0.4);
+        color: var(--accent);
+      }
+      .flow-node.green {
+        border-color: rgba(86, 211, 100, 0.4);
+        color: var(--accent3);
+      }
+      .flow-node.yellow {
+        border-color: rgba(227, 179, 65, 0.4);
+        color: var(--accent4);
+      }
+
+      /* SVG Diagrams */
+      .diagram-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+      }
+      .diagram-wrap svg {
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Summary box */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .summary-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        text-align: center;
+      }
+      .summary-card .emoji {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .summary-card .s-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .summary-card .s-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* Badge pill */
+      .pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .pill-blue {
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+      }
+      .pill-green {
+        background: rgba(86, 211, 100, 0.15);
+        color: var(--accent3);
+      }
+      .pill-orange {
+        background: rgba(247, 129, 102, 0.15);
+        color: var(--accent);
+      }
+
+      /* Interview tips */
+      .interview-tip {
+        background: rgba(227, 179, 65, 0.07);
+        border: 1px solid rgba(227, 179, 65, 0.25);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        font-size: 13.5px;
+      }
+      .interview-tip .tip-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent4);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Analogy block */
+      .analogy {
+        background: rgba(86, 211, 100, 0.05);
+        border: 1px solid rgba(86, 211, 100, 0.2);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        font-size: 14px;
+      }
+      .analogy .analogy-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent3);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Step list */
+      ol.steps {
+        list-style: none;
+        padding: 0;
+        counter-reset: step-counter;
+      }
+      ol.steps li {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: var(--muted);
+        counter-increment: step-counter;
+      }
+      ol.steps li::before {
+        content: counter(step-counter);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        background: rgba(121, 192, 255, 0.15);
+        color: var(--accent2);
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: "JetBrains Mono", monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      ol.steps li strong {
+        color: var(--text);
+      }
+
+      /* Voltage visual */
+      .voltage-box {
+        display: flex;
+        gap: 16px;
+        margin: 16px 0;
+        flex-wrap: wrap;
+      }
+      .v-card {
+        flex: 1;
+        min-width: 180px;
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        text-align: center;
+      }
+      .v-card.high {
+        background: rgba(86, 211, 100, 0.08);
+        border: 1px solid rgba(86, 211, 100, 0.3);
+      }
+      .v-card.low {
+        background: rgba(247, 129, 102, 0.08);
+        border: 1px solid rgba(247, 129, 102, 0.3);
+      }
+      .v-card .v-val {
+        font-size: 28px;
+        font-weight: 800;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .v-card.high .v-val {
+        color: var(--accent3);
+      }
+      .v-card.low .v-val {
+        color: var(--accent);
+      }
+      .v-card .v-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .v-card .v-bit {
+        font-size: 20px;
+        font-weight: 700;
+        font-family: "JetBrains Mono", monospace;
+        margin-top: 6px;
+      }
+      .v-card.high .v-bit {
+        color: var(--accent3);
+      }
+      .v-card.low .v-bit {
+        color: var(--accent);
+      }
+
+      /* Memory flow diagram boxes */
+      .mem-flow {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        margin: 20px 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .mem-node {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 18px;
+        text-align: center;
+        min-width: 120px;
+      }
+      .mem-node .m-icon {
+        font-size: 22px;
+        margin-bottom: 4px;
+      }
+      .mem-node .m-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .mem-node .m-tech {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .mem-node.hdd {
+        border-color: rgba(227, 179, 65, 0.4);
+      }
+      .mem-node.ram {
+        border-color: rgba(121, 192, 255, 0.4);
+      }
+      .mem-node.cpu {
+        border-color: rgba(86, 211, 100, 0.4);
+      }
+      .mem-arrow {
+        display: flex;
+        align-items: center;
+        padding: 0 6px;
+        color: var(--muted);
+        font-size: 20px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+      }
+      .mem-arrow span {
+        font-size: 10px;
+        color: var(--muted);
+        white-space: nowrap;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="course-tag">TAP Academy</div>
+        <h2>Full Stack Java Notes</h2>
+      </div>
+      <nav>
+        <div class="day-label">Week 1</div>
+        <a href="day1.html">🌍 Day 1 – Java Introduction</a>
+        <a href="day2.html" class="active">🖥️ Day 2 – Computer Basics</a>
+        <a href="day3.html">💻 Day 3 – Programming & OOP</a>
+        <a href="day4.html">🏗️ Day 4 – OOP in Java</a>
+        <a href="day5.html">📦 Day 5 – Java Basics & Data Types</a>
+
+        <div class="day-label">Week 2</div>
+        <a href="day6.html">🔁 Day 6 – Loops & Patterns</a>
+        <a href="day7.html">🎨 Day 7 – Advanced Patterns</a>
+        <a href="day8.html">🔢 Day 8 – Data Types</a>
+        <a href="day9.html">⚡ Day 9 – Data Storage & Binary</a>
+        <a href="day10.html">🔀 Day 10 – Type Casting</a>
+        <a href="day11.html">➕ Day 11 – Increment & Decrement</a>
+        <a href="day12.html">✖️ Day 12 – Operators & Basics</a>
+        <a href="day13.html">📮 Day 13 – Variables</a>
+        <a href="day14.html">🔗 Day 14 – Pass by Value & Reference</a>
+        <a href="day15.html">⚙️ Day 15 – Methods</a>
+        <a href="day16.html">📝 Day 16 – Method Types</a>
+        <a href="day17.html">🏛️ Day 17 – Class & Object</a>
+        <a href="day18.html">📊 Day 18 – Arrays</a>
+        <a href="day19.html">🔄 Day 19 – Arrays Deep Dive</a>
+        <a href="day20.html">⛓️ Day 20 – Jagged Arrays</a>
+        <a href="day21.html">🎬 Day 21 – Objects in Arrays</a>
+        <a href="day22.html">🔮 Day 22 – Array Methods</a>
+        <a href="day23.html">✨ Day 23 – Strings Advanced</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Page Header -->
+      <div class="page-header">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        <div class="day-badge">✦ Day 2</div>
+        <h1>Computer Fundamentals &amp; <span>How Programs Execute</span></h1>
+        <p class="subtitle">
+          Evolution of computers, transistors, binary, programming languages,
+          compiler, assembler, and computer memory architecture.
+        </p>
+        <div class="tags">
+          <span class="tag">Evolution</span>
+          <span class="tag">Transistor</span>
+          <span class="tag">Binary</span>
+          <span class="tag">Compiler</span>
+          <span class="tag">Assembler</span>
+          <span class="tag">RAM</span>
+          <span class="tag">Hard Disk</span>
+          <span class="tag">CPU</span>
+          <span class="tag">GPU</span>
+          <span class="tag">High-Level Language</span>
+        </div>
+      </div>
+
+      <!-- 1. Evolution of Computers -->
+      <section class="section" id="evolution">
+        <div class="section-title">
+          <div class="icon icon-blue">🖥️</div>
+          Evolution of Computers
+        </div>
+
+        <div class="highlight">
+          A <strong>computer</strong> is any device that can perform
+          <strong>computation</strong> (addition, subtraction, multiplication,
+          division). It doesn't have to look like a modern PC.
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Era</th>
+                <th>Computer</th>
+                <th>Size / Type</th>
+                <th>Key Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>2500 BC</strong></td>
+                <td>Abacus</td>
+                <td>Hand-held beads</td>
+                <td>
+                  First mechanical computer — could add, subtract, multiply,
+                  divide
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1930s</strong></td>
+                <td>Z1</td>
+                <td>Size of a <strong>room / factory</strong></td>
+                <td>
+                  First electromechanical computer; needed trucks to assemble
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1940s</strong></td>
+                <td>ENIAC</td>
+                <td>Size of a <strong>wall</strong></td>
+                <td>Drastic size reduction from Z1</td>
+              </tr>
+              <tr>
+                <td><strong>1960s</strong></td>
+                <td>Programma 101</td>
+                <td>Fits on a <strong>desk</strong></td>
+                <td>Desktop computer — but still no GUI or display</td>
+              </tr>
+              <tr>
+                <td><strong>1970s–80s</strong></td>
+                <td>Apple II</td>
+                <td>Personal Computer</td>
+                <td>
+                  First computer with <strong>GUI + keyboard + mouse</strong>.
+                  Birth of the "PC". Steve Jobs' biggest contribution.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Today</strong></td>
+                <td>Laptop / Smartphone</td>
+                <td>Pocket-sized</td>
+                <td>
+                  Billions of people use it daily — everyone's personal computer
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2024</strong></td>
+                <td>Apple Vision Pro</td>
+                <td>Wearable headset</td>
+                <td>
+                  Virtual reality computer — operated in air; first-gen product
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Now</strong></td>
+                <td>Meta Ray-Ban Smart Glasses</td>
+                <td>Sunglasses</td>
+                <td>
+                  Camera + AI built into specs; daily tasks without holding a
+                  phone
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Future?</strong></td>
+                <td>Neuralink (Elon Musk)</td>
+                <td>Brain chip</td>
+                <td>
+                  Chip drilled into skull — control computer with thoughts;
+                  already tested on war veteran
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight orange">
+          💡 <strong>GUI = Graphical User Interface</strong> — the visual
+          display (screen) that made computers usable by everyone, not just
+          scientists and engineers. Steve Jobs introduced this with Apple II.
+        </div>
+
+        <details>
+          <summary>🌟 Key People Who Changed Computing</summary>
+          <div class="details-body">
+            <div class="grid-2" style="margin-top: 12px">
+              <div class="card">
+                <div class="card-title">🍎 Steve Jobs</div>
+                <ul class="notes">
+                  <li>Founded Apple</li>
+                  <li>
+                    Invented the <strong>personal computer</strong> (Apple II)
+                    with GUI, keyboard, mouse
+                  </li>
+                  <li>iPhone, iPad, MacBook came much later</li>
+                  <li><strong>PC = his contribution to the world</strong></li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title">🟢 Jensen Huang — Nvidia</div>
+                <ul class="notes">
+                  <li>
+                    CEO of <strong>Nvidia</strong> — world's most valuable
+                    company (~$5 trillion)
+                  </li>
+                  <li>Above Netflix, Google, Microsoft, Amazon</li>
+                  <li>
+                    Started as a <strong>dishwasher</strong> → founded Nvidia in
+                    1993
+                  </li>
+                  <li>
+                    Nvidia makes <strong>GPUs</strong> — the engine behind all
+                    AI today
+                  </li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title">😎 Mark Zuckerberg — Meta</div>
+                <ul class="notes">
+                  <li>
+                    Partnered with <strong>Ray-Ban</strong> to create smart
+                    glasses
+                  </li>
+                  <li>Camera + AI assistant built into glasses</li>
+                  <li>Daily tasks via specs, no phone needed</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title">🚀 Elon Musk — Neuralink</div>
+                <ul class="notes">
+                  <li>Owns Tesla, SpaceX, Starlink and more</li>
+                  <li>
+                    SpaceX: created <strong>reusable rockets</strong> (no one
+                    else has)
+                  </li>
+                  <li>
+                    <strong>Neuralink</strong>: brain chip — control computer
+                    with your mind
+                  </li>
+                  <li>Already tested on a paralyzed war veteran</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 2. Components of a Computer -->
+      <section class="section" id="components">
+        <div class="section-title">
+          <div class="icon icon-orange">🔩</div>
+          Key Components Inside a Computer
+        </div>
+
+        <div class="grid-2">
+          <div class="definition">
+            <div class="term">🧠 Microprocessor (CPU)</div>
+            <div class="meaning">
+              The <strong>brain of the computer</strong>. Made out of billions
+              of transistors. Executes all instructions. Cannot store data or
+              act on its own — it is a <strong>dumb device</strong> that needs
+              instructions.
+            </div>
+          </div>
+          <div class="definition">
+            <div class="term">💾 Hard Disk (HDD)</div>
+            <div class="meaning">
+              A <strong>storage device</strong> made of magnetic plates with a
+              spindle that reads/writes data. Stores files permanently.
+              <strong>Non-volatile</strong> (data stays even without power).
+            </div>
+          </div>
+          <div class="definition">
+            <div class="term">⚡ RAM (Random Access Memory)</div>
+            <div class="meaning">
+              Fast temporary memory made of
+              <strong>semiconductor technology</strong>. Connects directly to
+              CPU. <strong>Volatile</strong> — all data is lost when power is
+              cut. Everything you type is stored here first.
+            </div>
+          </div>
+          <div class="definition">
+            <div class="term">🎮 GPU (Graphical Processing Unit)</div>
+            <div class="meaning">
+              Equally important as CPU in today's world. Handles
+              <strong>AI computation</strong> — every response from ChatGPT,
+              Perplexity, Grok is generated inside a GPU. Server rooms have
+              hundreds of thousands of GPUs.
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight green">
+          🤖 <strong>AI runs on GPU, not CPU.</strong> When you type a prompt in
+          ChatGPT and press Enter → it goes to the server → server has thousands
+          of GPUs → GPU generates the response → you see it on screen.
+        </div>
+      </section>
+
+      <!-- 3. Why Binary (0 and 1)? -->
+      <section class="section" id="binary">
+        <div class="section-title">
+          <div class="icon icon-yellow">⚡</div>
+          Why Does a Computer Only Understand 0 and 1?
+        </div>
+
+        <div class="highlight orange">
+          ❌ <strong>Wrong answer:</strong> "Because the computer understands 0
+          and 1." <br />
+          ✅ <strong>Right answer:</strong> Because the microprocessor is made
+          of <strong>transistors</strong>, and transistors only understand
+          <strong>voltage</strong> — high or low.
+        </div>
+
+        <ol class="steps">
+          <li>
+            <strong>Microprocessor</strong> is made out of billions of tiny
+            components called <strong>transistors</strong>.
+          </li>
+          <li>
+            A transistor understands only one thing: <strong>voltage</strong>.
+          </li>
+          <li>
+            There are only two types of voltage a transistor recognizes:
+            <strong>High Voltage (+5V)</strong> and
+            <strong>Low Voltage (0V)</strong>.
+          </li>
+          <li>
+            In computer science: High Voltage (+5V) =
+            <strong>1</strong> &nbsp;|&nbsp; Low Voltage (0V) =
+            <strong>0</strong>
+          </li>
+          <li>
+            That is why a computer only understands
+            <strong>zeros and ones</strong> — it's not a design choice, it's
+            physics.
+          </li>
+        </ol>
+
+        <div class="voltage-box">
+          <div class="v-card high">
+            <div class="v-val">+5V</div>
+            <div class="v-label">High Voltage</div>
+            <div class="v-bit">= 1</div>
+          </div>
+          <div class="v-card low">
+            <div class="v-val">0V</div>
+            <div class="v-label">Low Voltage</div>
+            <div class="v-bit">= 0</div>
+          </div>
+        </div>
+
+        <div class="definition">
+          <div class="term">Transistor</div>
+          <div class="meaning">
+            The smallest building block of a microprocessor. Made of
+            <strong>semiconductor material</strong> (e.g., silicon — a rare
+            metal). One microprocessor chip contains
+            <strong>billions of transistors</strong>. Understands only voltage:
+            high (+5V = 1) or low (0V = 0).
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Programming Languages -->
+      <section class="section" id="languages">
+        <div class="section-title">
+          <div class="icon icon-blue">💬</div>
+          Programming Languages — From Binary to High-Level
+        </div>
+
+        <div class="definition">
+          <div class="term">What is Programming / Coding?</div>
+          <div class="meaning">
+            A <strong>set of instructions</strong> given by a human being to the
+            microprocessor to perform a specific task. The person who gives
+            these instructions is called a <strong>programmer</strong> or
+            <strong>coder</strong>.
+          </div>
+        </div>
+
+        <div class="highlight">
+          The microprocessor is a <strong>dumb device</strong> — it does NOTHING
+          on its own. It needs a human to give instructions. Those instructions
+          = code. That's your job as a developer.
+        </div>
+
+        <!-- Timeline / Evolution flow -->
+        <div style="margin: 24px 0">
+          <div
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+            "
+          >
+            Language Evolution
+          </div>
+          <div
+            class="flow"
+            style="flex-wrap: wrap; gap: 12px; justify-content: flex-start"
+          >
+            <div class="flow-node orange" style="min-width: 140px">
+              Machine Level<br />Language (MLL)
+              <div class="label">0s and 1s only</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node yellow" style="min-width: 140px">
+              Assembly Level<br />Language (ALL)
+              <div class="label">ADD, SUB, MUL, DIV</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node blue" style="min-width: 140px">
+              High-Level<br />Language (HLL)
+              <div class="label">+, −, *, /</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node green" style="min-width: 140px">
+              NLP (Future)
+              <div class="label">Plain English → code</div>
+            </div>
+          </div>
+        </div>
+
+        <details open>
+          <summary>🔢 1. Machine Level Language (MLL)</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>Programs written <strong>purely in 0s and 1s</strong></li>
+              <li>
+                This is the
+                <strong
+                  >only language the microprocessor natively understands</strong
+                >
+              </li>
+              <li>
+                No translation needed — give it directly to the CPU and it
+                executes
+              </li>
+              <li>
+                Used in the <strong>1960s</strong> by scientists and engineers
+              </li>
+              <li>
+                <strong>Problem:</strong> Humans are bad at remembering numbers
+                — writing 100 lines of binary is impossible for most people
+              </li>
+            </ul>
+            <div class="analogy">
+              <div class="analogy-label">🧠 Analogy</div>
+              If I turned to the board and wrote 100 lines of 0s and 1s, half
+              the class would leave. Human beings are not wired to work with
+              numbers at scale.
+            </div>
+          </div>
+        </details>
+
+        <details open>
+          <summary>📝 2. Assembly Level Language (ALL)</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>
+                Instead of writing binary, we use
+                <strong>mnemonics</strong> (short words)
+              </li>
+              <li>
+                <code>ADD</code> for addition, <code>SUB</code> for subtraction,
+                <code>MUL</code> for multiply, <code>DIV</code> for divide
+              </li>
+              <li>More human-readable than binary, but still very low-level</li>
+              <li>
+                You may have written this in college in a subject like
+                <strong>Microcontroller / 8085</strong>
+              </li>
+              <li>
+                <strong>Problem:</strong> CPU doesn't understand this — it only
+                understands 0s and 1s
+              </li>
+              <li>
+                <strong>Solution:</strong> Need a translator →
+                <code>Assembler</code>
+              </li>
+            </ul>
+            <div class="definition" style="margin-top: 12px">
+              <div class="term">Assembler</div>
+              <div class="meaning">
+                A software that takes
+                <strong>Assembly Level Language</strong> and converts it into
+                <strong>Machine Level Language</strong> (0s and 1s) so the
+                microprocessor can execute it.
+              </div>
+            </div>
+            <div class="analogy">
+              <div class="analogy-label">
+                🧠 Analogy — PM Modi visiting France
+              </div>
+              PM Modi speaks Hindi. French president speaks French. They need a
+              <strong>translator</strong> who understands both languages. The
+              translator converts Hindi → French so they can communicate.
+              <strong>Assembler = Translator</strong> between Assembly and
+              Machine language.
+            </div>
+          </div>
+        </details>
+
+        <details open>
+          <summary>🚀 3. High-Level Language (HLL)</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>Uses symbols and words that humans naturally understand</li>
+              <li>
+                <code>+</code> for add, <code>-</code> for subtract,
+                <code>*</code> for multiply, <code>/</code> for divide
+              </li>
+              <li>Closest to how humans think and communicate</li>
+              <li>
+                <strong>Problem:</strong> CPU still doesn't understand this —
+                still needs 0s and 1s
+              </li>
+              <li>
+                <strong>Solution:</strong> Need a new translator →
+                <code>Compiler</code>
+              </li>
+            </ul>
+            <div class="definition" style="margin-top: 12px">
+              <div class="term">Compiler</div>
+              <div class="meaning">
+                A software that takes <strong>High-Level Language</strong> and
+                converts it into
+                <strong>Machine Level Language</strong> (binary) which the
+                microprocessor understands and can execute to produce output.
+              </div>
+            </div>
+            <div class="analogy">
+              <div class="analogy-label">
+                🧠 Analogy — Different Countries, Different Translators
+              </div>
+              Modi went to France → needed a French translator. Now he goes to
+              Japan → cannot use the same translator. Needs a Japanese
+              translator. Similarly, Assembly → Machine uses an
+              <strong>Assembler</strong>, but High-Level → Machine needs a
+              different translator: the <strong>Compiler</strong>.
+            </div>
+            <div style="margin-top: 16px">
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--muted);
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                  font-weight: 700;
+                  margin-bottom: 10px;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                "
+              >
+                Examples of High-Level Languages
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <span class="tag">Java</span>
+                <span class="tag">Python</span>
+                <span class="tag">JavaScript</span>
+                <span class="tag">C</span>
+                <span class="tag">C++</span>
+                <span class="tag">Swift</span>
+                <span class="tag">Kotlin</span>
+                <span class="tag">PHP</span>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Full flow diagram -->
+        <div class="diagram-wrap" style="margin-top: 8px">
+          <div
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              font-weight: 700;
+              margin-bottom: 14px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              text-align: center;
+            "
+          >
+            Complete Execution Flow
+          </div>
+          <svg
+            width="720"
+            height="100"
+            viewBox="0 0 720 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="max-width: 100%"
+          >
+            <defs>
+              <marker
+                id="arr"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L0,6 L8,3 z" fill="#30363d" />
+              </marker>
+            </defs>
+            <!-- HLL Box -->
+            <rect
+              x="10"
+              y="20"
+              width="130"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(121,192,255,0.4)"
+            />
+            <text
+              x="75"
+              y="46"
+              text-anchor="middle"
+              fill="#79c0ff"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              High-Level
+            </text>
+            <text
+              x="75"
+              y="63"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Java / Python
+            </text>
+
+            <line
+              x1="140"
+              y1="50"
+              x2="178"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <!-- Compiler Box -->
+            <rect
+              x="178"
+              y="20"
+              width="120"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(247,129,102,0.4)"
+            />
+            <text
+              x="238"
+              y="46"
+              text-anchor="middle"
+              fill="#f78166"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Compiler
+            </text>
+            <text
+              x="238"
+              y="63"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              HLL → MLL
+            </text>
+
+            <line
+              x1="298"
+              y1="50"
+              x2="336"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <!-- MLL Box -->
+            <rect
+              x="336"
+              y="20"
+              width="130"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(227,179,65,0.4)"
+            />
+            <text
+              x="401"
+              y="46"
+              text-anchor="middle"
+              fill="#e3b341"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Machine Level
+            </text>
+            <text
+              x="401"
+              y="63"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              0s and 1s
+            </text>
+
+            <line
+              x1="466"
+              y1="50"
+              x2="504"
+              y2="50"
+              stroke="#30363d"
+              stroke-width="2"
+              marker-end="url(#arr)"
+            />
+
+            <!-- CPU Box -->
+            <rect
+              x="504"
+              y="20"
+              width="130"
+              height="60"
+              rx="8"
+              fill="#1c2330"
+              stroke="rgba(86,211,100,0.4)"
+            />
+            <text
+              x="569"
+              y="46"
+              text-anchor="middle"
+              fill="#56d364"
+              font-family="Sora,sans-serif"
+              font-size="12"
+              font-weight="700"
+            >
+              Microprocessor
+            </text>
+            <text
+              x="569"
+              y="63"
+              text-anchor="middle"
+              fill="#8b949e"
+              font-family="Sora,sans-serif"
+              font-size="11"
+            >
+              Executes → Output
+            </text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 5. Compiler vs Assembler -->
+      <section class="section" id="compiler-vs-assembler">
+        <div class="section-title">
+          <div class="icon icon-green">⚖️</div>
+          Compiler vs Assembler — Quick Comparison
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Assembler</th>
+                <th>Compiler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Input Language</strong></td>
+                <td>Assembly Level Language (mnemonics like ADD, SUB)</td>
+                <td>High-Level Language (Java, Python, C++)</td>
+              </tr>
+              <tr>
+                <td><strong>Output</strong></td>
+                <td>Machine Level Language (binary)</td>
+                <td>Machine Level Language (binary)</td>
+              </tr>
+              <tr>
+                <td><strong>Used For</strong></td>
+                <td>Low-level programming (microcontrollers, hardware)</td>
+                <td>All modern software development</td>
+              </tr>
+              <tr>
+                <td><strong>Human-Readability</strong></td>
+                <td>Moderate (ADD, SUB etc.)</td>
+                <td>High (very close to natural language)</td>
+              </tr>
+              <tr>
+                <td><strong>Analogy</strong></td>
+                <td>Hindi → French translator</td>
+                <td>
+                  Hindi → Japanese translator (different language, different
+                  tool)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. Memory Architecture -->
+      <section class="section" id="memory">
+        <div class="section-title">
+          <div class="icon icon-yellow">🗄️</div>
+          Memory Architecture — How a Computer Stores &amp; Runs Programs
+        </div>
+
+        <!-- Memory Flow Diagram -->
+        <div class="diagram-wrap">
+          <div
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              font-weight: 700;
+              margin-bottom: 14px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              text-align: center;
+            "
+          >
+            Internal Structure of a Computer
+          </div>
+          <div class="mem-flow">
+            <div class="mem-node hdd">
+              <div class="m-icon">💿</div>
+              <div class="m-name">Hard Disk</div>
+              <div class="m-tech">Magnetic Tech</div>
+              <div class="m-tech" style="color: var(--accent4)">
+                Non-Volatile · Slow · Cheap
+              </div>
+            </div>
+            <div class="mem-arrow">
+              →
+              <span>Loading</span>
+            </div>
+            <div class="mem-node ram">
+              <div class="m-icon">⚡</div>
+              <div class="m-name">RAM</div>
+              <div class="m-tech">Semiconductor Tech</div>
+              <div class="m-tech" style="color: var(--accent2)">
+                Volatile · Fast · Expensive
+              </div>
+            </div>
+            <div class="mem-arrow">
+              →
+              <span>Execute</span>
+            </div>
+            <div class="mem-node cpu">
+              <div class="m-icon">🧠</div>
+              <div class="m-name">CPU (Microprocessor)</div>
+              <div class="m-tech">Semiconductor Tech</div>
+              <div class="m-tech" style="color: var(--accent3)">
+                No memory · Ultra-Fast
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 8px">
+            <span
+              style="
+                font-size: 11px;
+                color: var(--muted);
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+              "
+              >← Saving (RAM → Hard Disk)</span
+            >
+          </div>
+        </div>
+
+        <!-- Hard Disk Details -->
+        <details open>
+          <summary>💿 Hard Disk — The Permanent Storage</summary>
+          <div class="details-body">
+            <div class="grid-2" style="margin-top: 12px">
+              <div>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--accent3);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 8px;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                >
+                  ✅ Advantages
+                </div>
+                <ul class="notes">
+                  <li>
+                    <strong>Non-volatile</strong> — data stays without power
+                  </li>
+                  <li>
+                    <strong>Cheap</strong> — 5,000 rupees = 1–2 TB storage
+                  </li>
+                  <li>High capacity (TB range)</li>
+                </ul>
+              </div>
+              <div>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--accent);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 8px;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                >
+                  ❌ Disadvantages
+                </div>
+                <ul class="notes">
+                  <li>
+                    <strong>Slow</strong> — magnetic technology (spindle
+                    scratches plates)
+                  </li>
+                  <li><strong>Bulky</strong> — larger physical size vs RAM</li>
+                </ul>
+              </div>
+            </div>
+            <div class="highlight yellow" style="margin-top: 8px">
+              <strong>Data on Hard Disk is called:</strong> <code>Files</code>
+            </div>
+          </div>
+        </details>
+
+        <!-- RAM Details -->
+        <details open>
+          <summary>⚡ RAM — The Fast Temporary Workspace</summary>
+          <div class="details-body">
+            <div class="grid-2" style="margin-top: 12px">
+              <div>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--accent3);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 8px;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                >
+                  ✅ Advantages
+                </div>
+                <ul class="notes">
+                  <li>
+                    <strong>Extremely fast</strong> — semiconductor technology,
+                    same as CPU
+                  </li>
+                  <li><strong>Compact</strong> — thin and light</li>
+                  <li>Directly communicates with CPU at matching speed</li>
+                </ul>
+              </div>
+              <div>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: var(--accent);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 8px;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                >
+                  ❌ Disadvantages
+                </div>
+                <ul class="notes">
+                  <li>
+                    <strong>Volatile</strong> — all data erased when power is
+                    cut
+                  </li>
+                  <li>
+                    <strong>Expensive</strong> — 5,000 rupees = only 8–16 GB (vs
+                    2 TB HDD)
+                  </li>
+                  <li>Limited capacity</li>
+                </ul>
+              </div>
+            </div>
+            <div class="highlight" style="margin-top: 8px">
+              <strong>Data on RAM is called:</strong>
+              <code>Process / Program (in execution)</code>
+            </div>
+            <div class="analogy" style="margin-top: 8px">
+              <div class="analogy-label">
+                🧠 Analogy — Volatile = Chemistry Lab Chemical
+              </div>
+              In chemistry lab, the instructor always says "close the lid" on
+              chemicals. If left open, liquid evaporates by next day. Similarly,
+              RAM data "evaporates" the moment power is cut — it needs constant
+              electricity to hold its contents.
+            </div>
+          </div>
+        </details>
+
+        <!-- Why RAM was introduced -->
+        <details>
+          <summary>🐢 Why Was RAM Introduced? (The Speed Problem)</summary>
+          <div class="details-body">
+            <ul class="notes" style="margin-top: 12px">
+              <li>
+                CPU is made of <strong>semiconductor technology</strong> —
+                extremely fast
+              </li>
+              <li>
+                Hard disk is made of <strong>magnetic technology</strong> — much
+                slower
+              </li>
+              <li>
+                When CPU and HDD were connected directly, the CPU had to wait
+                for the slow HDD
+              </li>
+              <li>
+                Overall computer speed = speed of the
+                <strong>slowest component</strong>
+              </li>
+              <li>
+                Solution: Introduce <strong>RAM</strong> (also semiconductor)
+                between HDD and CPU — both are fast, no bottleneck
+              </li>
+            </ul>
+            <div class="analogy">
+              <div class="analogy-label">
+                🧠 Analogy — Usain Bolt &amp; You, Tied Together
+              </div>
+              Imagine you're tied to Usain Bolt for a 100m race. Bolt can run
+              100m in 9.58s. You run at walking pace. If both must reach the
+              finish line together — Bolt has to run at <em>your</em> speed. The
+              <strong>slow person decides the speed</strong>. Same with CPU +
+              Hard Disk: the hard disk was slowing down the CPU. RAM (same speed
+              as CPU) was introduced to fix this.
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 7. Saving and Loading -->
+      <section class="section" id="saving-loading">
+        <div class="section-title">
+          <div class="icon icon-orange">💾</div>
+          What is "Saving" and "Loading"? (Explained Technically)
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">💾 Saving</div>
+            <p>
+              Taking content from <strong>RAM</strong> and creating a
+              <strong>copy on the Hard Disk</strong>.
+            </p>
+            <p>
+              RAM is volatile — power cut = data gone. Saving moves it to
+              permanent storage (HDD).
+            </p>
+            <div class="flow" style="margin-top: 10px; gap: 8px">
+              <div
+                class="flow-node blue"
+                style="min-width: 80px; font-size: 12px"
+              >
+                RAM
+                <div class="label">temporary</div>
+              </div>
+              <div class="flow-arrow" style="font-size: 14px">→</div>
+              <div
+                class="flow-node yellow"
+                style="min-width: 80px; font-size: 12px"
+              >
+                Hard Disk
+                <div class="label">permanent</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📂 Loading</div>
+            <p>
+              Taking content from the <strong>Hard Disk</strong> and putting it
+              onto the <strong>RAM</strong> so the CPU can execute it.
+            </p>
+            <p>
+              The spinning circle you see when opening a file/app = this process
+              happening.
+            </p>
+            <div class="flow" style="margin-top: 10px; gap: 8px">
+              <div
+                class="flow-node yellow"
+                style="min-width: 80px; font-size: 12px"
+              >
+                Hard Disk
+                <div class="label">stored</div>
+              </div>
+              <div class="flow-arrow" style="font-size: 14px">→</div>
+              <div
+                class="flow-node blue"
+                style="min-width: 80px; font-size: 12px"
+              >
+                RAM
+                <div class="label">ready</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analogy">
+          <div class="analogy-label">🧠 Real-Life Examples</div>
+          <ul class="notes" style="margin-top: 6px">
+            <li>
+              <strong>Turbo C in college lab:</strong> Lab instructor kept
+              saying "Save the program!" You ignored it. Power cut. Code gone.
+              Now you know why — code was only on RAM, not saved to HDD.
+            </li>
+            <li>
+              <strong>PUBG lobby loading:</strong> Friend opens game in 10
+              seconds, yours takes 2 minutes. Difference = their phone has
+              faster RAM + HDD (SSD). The game is "loading" from storage to RAM
+              before you can play.
+            </li>
+            <li>
+              <strong>"8 GB RAM" for PUBG:</strong> You went to parents asking
+              for 8 GB RAM phone. Now you know: more RAM = more data loaded at
+              once = faster, smoother experience.
+            </li>
+          </ul>
+        </div>
+
+        <div class="highlight orange">
+          📌 <strong>Rule to remember:</strong> Anything you type is always
+          stored on the <strong>RAM first</strong>. Save it → goes to
+          <strong>Hard Disk</strong>. Power cut before saving → data is gone
+          forever.
+        </div>
+      </section>
+
+      <!-- 8. RAM vs Hard Disk Comparison Table -->
+      <section class="section" id="comparison">
+        <div class="section-title">
+          <div class="icon icon-green">📊</div>
+          RAM vs Hard Disk — Full Comparison
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>RAM</th>
+                <th>Hard Disk (HDD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Technology</strong></td>
+                <td>Semiconductor</td>
+                <td>Magnetic (spinning plates)</td>
+              </tr>
+              <tr>
+                <td><strong>Speed</strong></td>
+                <td>
+                  <span style="color: var(--accent3)">✅ Extremely Fast</span>
+                </td>
+                <td><span style="color: var(--accent)">❌ Slow</span></td>
+              </tr>
+              <tr>
+                <td><strong>Volatile?</strong></td>
+                <td>
+                  <span style="color: var(--accent)"
+                    >❌ Yes — needs constant power</span
+                  >
+                </td>
+                <td>
+                  <span style="color: var(--accent3)"
+                    >✅ No — data stays without power</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Cost</strong></td>
+                <td>
+                  <span style="color: var(--accent)"
+                    >❌ Expensive — 5k = 8–16 GB</span
+                  >
+                </td>
+                <td>
+                  <span style="color: var(--accent3)"
+                    >✅ Cheap — 5k = 1–2 TB</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Size / Form Factor</strong></td>
+                <td>Compact, thin</td>
+                <td>Bulky</td>
+              </tr>
+              <tr>
+                <td><strong>Connected To</strong></td>
+                <td>Microprocessor (directly)</td>
+                <td>RAM (via bus connection)</td>
+              </tr>
+              <tr>
+                <td><strong>Data Called</strong></td>
+                <td><code>Process</code> (program in execution)</td>
+                <td><code>File</code></td>
+              </tr>
+              <tr>
+                <td><strong>Role</strong></td>
+                <td>Active workspace — holds what's currently running</td>
+                <td>Permanent storage — holds saved files</td>
+              </tr>
+              <tr>
+                <td><strong>Real-World Example</strong></td>
+                <td>Desk where you work</td>
+                <td>Filing cabinet where you store documents</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight">
+          💡 <strong>Bus Connection</strong> — The white thick wire inside your
+          laptop that connects Hard Disk ↔ RAM ↔ CPU. This is how data travels
+          between components.
+        </div>
+
+        <!-- CPU Register mention -->
+        <div class="definition">
+          <div class="term">Register (Inside CPU)</div>
+          <div class="meaning">
+            The CPU can also store a very tiny amount of data — in
+            <strong>KB or MB only</strong>. This storage is called a
+            <strong>Register</strong>. Registers hold the most critical data
+            needed during execution. Do NOT manually edit registers on your
+            laptop — it can crash the system.
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Key Definitions -->
+      <section class="section" id="definitions">
+        <div class="section-title">
+          <div class="icon icon-yellow">📖</div>
+          Key Definitions (Interview Ready)
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is a Compiler?</div>
+          A <strong>Compiler</strong> is a software that takes a
+          <strong>High-Level Language</strong> (like Java or Python) and
+          converts it into <strong>Machine Level Language</strong> (binary: 0s
+          and 1s) which the microprocessor can understand and execute to produce
+          output.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is an Assembler?</div>
+          An <strong>Assembler</strong> is a software that takes
+          <strong>Assembly Level Language</strong> (mnemonics like ADD, SUB,
+          MUL) and converts it into
+          <strong>Machine Level Language</strong> (binary) for the
+          microprocessor.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">
+            Q: Why does a computer only understand 0 and 1?
+          </div>
+          A computer's microprocessor is made of <strong>transistors</strong>. A
+          transistor only understands <strong>voltage</strong> — High Voltage
+          (+5V) is represented as <code>1</code>, Low Voltage (0V) is
+          represented as <code>0</code>. That is why a computer only works with
+          binary.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: What is Programming / Coding?</div>
+          Programming is a <strong>set of instructions</strong> given by a human
+          being to the microprocessor to perform a specific task. A person who
+          writes these instructions is called a <strong>programmer</strong> or
+          <strong>coder</strong>.
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">
+            Q: What is the difference between Saving and Loading?
+          </div>
+          <strong>Saving</strong> = copying data from
+          <strong>RAM → Hard Disk</strong> (making it permanent).
+          <strong>Loading</strong> = copying data from
+          <strong>Hard Disk → RAM</strong> (making it ready for CPU to execute).
+        </div>
+
+        <div class="interview-tip">
+          <div class="tip-label">Q: Why is RAM called volatile memory?</div>
+          RAM requires a <strong>constant supply of electricity</strong> to
+          retain data. The moment power is cut, everything stored in RAM is
+          permanently erased. That's why you must
+          <strong>save your work</strong> to HDD before shutting down.
+        </div>
+      </section>
+
+      <!-- 10. Summary -->
+      <section class="section" id="summary">
+        <div class="section-title">
+          <div class="icon icon-green">✅</div>
+          Day 2 Summary
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="emoji">🧱</div>
+            <div class="s-title">Abacus → Neuralink</div>
+            <div class="s-sub">
+              Computers evolved from 2500 BC beads to brain chips
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">⚡</div>
+            <div class="s-title">Transistor = Binary</div>
+            <div class="s-sub">+5V = 1, 0V = 0. That's why only 0s and 1s</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔢</div>
+            <div class="s-title">Machine Level</div>
+            <div class="s-sub">Only binary. CPU understands it directly</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">📝</div>
+            <div class="s-title">Assembly Level</div>
+            <div class="s-sub">ADD, SUB, MUL. Needs Assembler to convert</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🚀</div>
+            <div class="s-title">High-Level Language</div>
+            <div class="s-sub">Java, Python. Needs Compiler to convert</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">🔄</div>
+            <div class="s-title">Compiler</div>
+            <div class="s-sub">HLL → Machine Level. Modern dev uses this</div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">💾</div>
+            <div class="s-title">RAM + HDD</div>
+            <div class="s-sub">
+              HDD: cheap, slow, permanent. RAM: fast, costly, volatile
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="emoji">💿</div>
+            <div class="s-title">Save / Load</div>
+            <div class="s-sub">Save = RAM→HDD. Load = HDD→RAM</div>
+          </div>
+        </div>
+
+        <div class="highlight green" style="margin-top: 24px">
+          🎯 <strong>Quick Revision:</strong> Every program you write (HLL) →
+          Compiler converts it to binary → Loads into RAM → CPU executes →
+          Output. Save it to HDD to make it permanent.
+        </div>
+
+        <div class="highlight" style="margin-top: 12px">
+          📅 <strong>Starting Tomorrow (Day 3):</strong> We step into
+          <strong>Java programming</strong>. Everything covered today is your
+          foundation — without understanding how computers work internally,
+          learning Java has no meaning.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
